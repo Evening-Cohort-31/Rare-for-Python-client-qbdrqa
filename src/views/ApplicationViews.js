@@ -12,6 +12,7 @@ export const ApplicationViews = ({ token, setToken }) => {
       <Route element={<Authorized token={token} />}>
         {/* Add Routes here */}
         <Route path="/new_post" element={<CreatePostForm/>}/>
+        <Route path="/post/:id" element={<>Post Details Coming Soon!</>}/>
       </Route>
     </Routes>
   </>
