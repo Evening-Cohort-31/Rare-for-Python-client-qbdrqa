@@ -33,7 +33,6 @@ export const CreatePostForm = () => {
             if (res.status === 201) {
                 //TODO: Create Posts route/postDetails
                 const response = await res.response
-                console.log(response)
                 navigate(`/post/${response.id}`, {state: response})
             } else if (res.status >=400 && res.status < 500) {
                 setError({error: true, message: "Action not supported"})
