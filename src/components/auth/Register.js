@@ -12,6 +12,7 @@ export const Register = ({setToken}) => {
   const password = useRef()
   const verifyPassword = useRef()
   const passwordDialog = useRef()
+  const type = useRef()
   const navigate = useNavigate()
 
   const handleRegister = (e) => {
@@ -24,7 +25,8 @@ export const Register = ({setToken}) => {
         last_name: lastName.current.value,
         email: email.current.value,
         password: password.current.value,
-        bio: bio.current.value
+        bio: bio.current.value,
+        type: "Author"
       }
 
       registerUser(newUser)
