@@ -15,14 +15,6 @@ export const CreatePostForm = () => {
     //TODO: Create a CategoryManager and getCategories function
     const categories = [{id: 1, label: "Life"}, {id: 2, label: "Work"}, {id: 3, label: "Hobby"}, {id: 4, label: "Fluff"}]
 
-    const handleCancel = () => {
-        if (window.history.state && window.history.state.idx > 0) {
-            navigate(-1)
-        } else {
-            navigate("/")
-        }
-    }
-
     const handleCreateNewPost = (e) => {
         setError({error: false, message: ""})
         e.preventDefault()
@@ -32,15 +24,17 @@ export const CreatePostForm = () => {
             user_id: Number(localStorage.getItem("auth_token")),
             category_id: Number(categoryId.current.value),
             title: title.current.value,
-            imageUrl: imageUrl.current.value,
+            image_url: imageUrl.current.value,
             content: content.current.value,
             approved: true
         }
-        createPost(newPost).then(res => {
+        createPost(newPost).then(async res => {
             setLoading(false)
             if (res.status === 201) {
                 //TODO: Create Posts route/postDetails
-                navigate(`/post/${res.response.id}`, {state: res.response})
+                const response = await res.response
+                console.log(response)
+                navigate(`/post/${response.id}`, {state: response})
             } else if (res.status >=400 && res.status < 500) {
                 setError({error: true, message: "Action not supported"})
             } else if (res.status >=500) {
@@ -48,7 +42,10 @@ export const CreatePostForm = () => {
             } else {
                 setError({error: true, message: "An unexpected error has occurred, please try again"})
             }
-        })
+        }).catch(err => {
+            setLoading(false)
+            setError({error: true, message: "An unexpected error occurred"})
+        }) 
         }
 
     const errorMessage = (
