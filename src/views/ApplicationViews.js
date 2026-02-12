@@ -13,6 +13,7 @@ export const ApplicationViews = ({ token, setToken }) => {
         {/* Add Routes here */}
         <Route path="/new_post" element={<CreatePostForm/>}/>
         <Route path="/post/:id" element={<>Post Details Coming Soon!</>}/>
+        <Route path="/posts/:id" element={<>My Posts Coming Soon!</>}/>
       </Route>
     </Routes>
   </>
