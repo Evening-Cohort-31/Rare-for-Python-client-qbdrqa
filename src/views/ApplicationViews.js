@@ -3,6 +3,7 @@ import { Login } from "../components/auth/Login"
 import { Register } from "../components/auth/Register"
 import { Authorized } from "./Authorized"
 import { CreatePostForm } from "../components/posts/CreatePostForm.jsx"
+import { MyPosts } from "../components/posts/MyPosts.jsx"
 
 export const ApplicationViews = ({ token, setToken }) => {
   return <>
@@ -13,7 +14,7 @@ export const ApplicationViews = ({ token, setToken }) => {
         {/* Add Routes here */}
         <Route path="/new_post" element={<CreatePostForm/>}/>
         <Route path="/post/:id" element={<>Post Details Coming Soon!</>}/>
-        <Route path="/posts/:id" element={<>My Posts Coming Soon!</>}/>
+        <Route path="/posts/:userId" element={<MyPosts/>}/>
       </Route>
     </Routes>
   </>
