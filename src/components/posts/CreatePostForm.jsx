@@ -84,12 +84,14 @@ export const CreatePostForm = () => {
                 <div className="field">
                     <label className="label">Category*</label>
                     <div className="control">
-                        <select className="select" ref={categoryId} required>
-                            <option value="">Select a Category</option>
-                            {categories.map(cat => (
-                                <option key={cat.id} value={cat.id}>{cat.label}</option>
-                            ))}
-                        </select>
+                        <div className="select">
+                            <select ref={categoryId} required>
+                                <option value="">Select a Category</option>
+                                {categories.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
 
