@@ -40,9 +40,16 @@ export const MyPosts = () => {
                     ))
                 ) : posts.length > 0 ? posts.map((post) => (
                     <div className="card" key={post.id} style={{marginTop: "10px"}}>
+                        <header className="card-header">
+                            <p className="card-header-title">{post.title}</p>
+                            <button className="card-header-icon" aria-label="edit">
+                                <span className="icon">
+                                    <i className="fas fa-edit"></i>
+                                </span>
+                            </button>
+                        </header>
                         <div className="card-content">
                             <div className="content">
-                                <h3 className="subtitle">{post.title}</h3>
                                 <p>By: {post.user.username}</p>
                                 <p>Category: {post.category.label}</p>
                             </div>
