@@ -3,6 +3,7 @@ import { getPostByUserId } from "../../managers/PostManager.js"
 import { useEffect, useState } from "react"
 import { MdEdit } from "react-icons/md"
 
+// Component to display a user's posts
 export const MyPosts = () => {
     const {userId} = useParams()
     const [posts, setPosts] = useState([])
@@ -10,6 +11,7 @@ export const MyPosts = () => {
     const [error, setError] = useState({error: false, message: ""})
     const navigate = useNavigate()
 
+    // Grab the users's posts on load
     useEffect(() => {
         setLoading(true)
         getPostByUserId(userId).then(async res => {
@@ -36,6 +38,7 @@ export const MyPosts = () => {
         <div className="columns is-centered">
             <div className="column is-one-third">
                 <h1 className="title">My Posts</h1>
+                {/*Displays a skeleton while loading */}
                 {loading ? (
                     Array.from({ length: 5 }).map((_, i) => (
                         <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>

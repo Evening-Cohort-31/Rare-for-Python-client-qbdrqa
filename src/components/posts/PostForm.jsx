@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { createPost, editPost, getPostById } from "../../managers/PostManager.js";
 
+// A form for letting users create or edit a post
 export const PostForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState({error: false, message:""});
@@ -23,6 +24,7 @@ export const PostForm = () => {
     //TODO: Create a CategoryManager and getCategories function
     const categories = [{id: 1, label: "Life"}, {id: 2, label: "Work"}, {id: 3, label: "Hobby"}, {id: 4, label: "Fluff"}]
 
+    //Load form with post data if editing
     useEffect(() => {
         if (edit && postId) {
             setLoading(true)
@@ -31,6 +33,8 @@ export const PostForm = () => {
                 if (res.status === 200) {
                     const post = await res.response
                     if (post.user_id !== userId) {
+                        // Routes to home page if user tries to edit another user's posts
+                        //TODO: Need to add better handling for his, i.e. refuse to navigate to page at all
                         setError({error: true, message: "You do not have permission to edit this post"})
                         setTimeout(() => {
                             navigate("/")
@@ -48,8 +52,9 @@ export const PostForm = () => {
                 }
             })
         }
-    }, [edit, postId])
+    }, [edit, postId, navigate, userId])
 
+    // Updates existing post or creates new one
     const handleSubmitPost = (e) => {
         setError({error: false, message: ""})
         e.preventDefault()
@@ -84,6 +89,7 @@ export const PostForm = () => {
         }) 
     }
 
+    // A modal to display error messages
     const errorMessage = (
             <div className={`modal ${error.error ? "is-active" : ""}`}>
                 <div className="modal-background" onClick={() => setError({error: false, message: ""})}></div>

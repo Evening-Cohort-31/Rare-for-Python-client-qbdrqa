@@ -26,6 +26,7 @@ export const createPost = (post) => {
         })
 }
 
+//Get all of a user's posts
 export const getPostByUserId = (userId) => {
   return fetch(`${apiUrl}/posts?user_id=${userId}`, {
     headers: {
@@ -39,6 +40,7 @@ export const getPostByUserId = (userId) => {
   })
 }
 
+//Edit a single post
 export const editPost = (post) => {
   console.log(post)
   return fetch(`${apiUrl}/posts/${post.id}`, {
@@ -56,6 +58,7 @@ export const editPost = (post) => {
   })
 }
 
+//Get a post by it's id
 export const getPostById = (id) => {
   return fetch(`${apiUrl}/posts/${id}`, {
     headers: {
