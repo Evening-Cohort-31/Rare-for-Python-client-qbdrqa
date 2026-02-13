@@ -1,12 +1,14 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { getPostByUserId } from "../../managers/PostManager.js"
 import { useEffect, useState } from "react"
+import { MdEdit } from "react-icons/md"
 
 export const MyPosts = () => {
     const {userId} = useParams()
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState({error: false, message: ""})
+    const navigate = useNavigate()
 
     useEffect(() => {
         setLoading(true)
@@ -36,7 +38,7 @@ export const MyPosts = () => {
                 <h1 className="title">My Posts</h1>
                 {loading ? (
                     Array.from({ length: 5 }).map((_, i) => (
-                        <div className="card is-skeleton" style={{marginTop: "10px", minHeight: 150}}/>
+                        <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
                     ))
                 ) : posts.length > 0 ? posts.map((post) => (
                     <div className="card" key={post.id} style={{marginTop: "10px"}}>
@@ -44,7 +46,9 @@ export const MyPosts = () => {
                             <p className="card-header-title">{post.title}</p>
                             <button className="card-header-icon" aria-label="edit">
                                 <span className="icon">
-                                    <i className="fas fa-edit"></i>
+                                    <MdEdit onClick={() => {
+                                        navigate(`/post/${post.id}?edit=true`)
+                                    }}/>
                                 </span>
                             </button>
                         </header>

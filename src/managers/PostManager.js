@@ -38,3 +38,34 @@ export const getPostByUserId = (userId) => {
     return {status: status, response: response}
   })
 }
+
+export const editPost = (post) => {
+  console.log(post)
+  return fetch(`${apiUrl}/posts/${post.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(post)
+  }).then(res => {
+    const status = res.status
+    const response = res.json();
+
+      return {status: status, response: response}
+  })
+}
+
+export const getPostById = (id) => {
+  return fetch(`${apiUrl}/posts/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+  }).then(res => {
+    const status = res.status
+    const response = res.json()
+
+    return {status: status, response: response}
+  })
+}

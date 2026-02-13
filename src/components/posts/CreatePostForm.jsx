@@ -45,7 +45,7 @@ export const CreatePostForm = () => {
             setLoading(false)
             setError({error: true, message: "An unexpected error occurred"})
         }) 
-        }
+    }
 
     const errorMessage = (
             <div className={`modal ${error.error ? "is-active" : ""}`}>
