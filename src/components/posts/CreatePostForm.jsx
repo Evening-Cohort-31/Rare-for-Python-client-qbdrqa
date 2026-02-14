@@ -1,8 +1,10 @@
 import { useRef, useState } from "react"
-import { Link } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import { createPost } from "../../managers/PostManager.js"
 
+//TODO: Possibly remove module if PostForm replaces it
+
+// A form for creating a new post
 export const CreatePostForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState({error: false, message:""});
@@ -15,6 +17,7 @@ export const CreatePostForm = () => {
     //TODO: Create a CategoryManager and getCategories function
     const categories = [{id: 1, label: "Life"}, {id: 2, label: "Work"}, {id: 3, label: "Hobby"}, {id: 4, label: "Fluff"}]
 
+    // Method to create new post with loading/error handling
     const handleCreateNewPost = (e) => {
         setError({error: false, message: ""})
         e.preventDefault()
@@ -45,8 +48,9 @@ export const CreatePostForm = () => {
             setLoading(false)
             setError({error: true, message: "An unexpected error occurred"})
         }) 
-        }
+    }
 
+    // A modal to display error messages
     const errorMessage = (
             <div className={`modal ${error.error ? "is-active" : ""}`}>
                 <div className="modal-background" onClick={() => setError({error: false, message: ""})}></div>
