@@ -6,6 +6,8 @@ import { PostsList } from "./PostsList"
 import { MyPosts } from "../components/posts/MyPosts.jsx"
 import { PostForm } from "../components/posts/PostForm.jsx"
 import { ConditionalPostView } from "../components/posts/ConditionalPostView.jsx"
+import { CategoryList } from "../managers/CategoryList"
+import { UserList } from "../managers/UserList"
 
 export const ApplicationViews = ({ token, setToken }) => {
   return (
@@ -20,6 +22,8 @@ export const ApplicationViews = ({ token, setToken }) => {
         <Route path="/new_post" element={<PostForm/>}/>
         <Route path="/post/:id" element={<ConditionalPostView/>}/>
         <Route path="/posts/:userId" element={<MyPosts/>}/>
+        <Route path="/categories" element={<CategoryList />} />
+        <Route path="/users" element={<UserList />} />
 
       </Route>
 
