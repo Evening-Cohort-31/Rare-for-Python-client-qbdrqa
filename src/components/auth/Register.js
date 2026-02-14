@@ -12,7 +12,6 @@ export const Register = ({setToken}) => {
   const password = useRef()
   const verifyPassword = useRef()
   const passwordDialog = useRef()
-  const type = useRef()
   const navigate = useNavigate()
 
   const handleRegister = (e) => {

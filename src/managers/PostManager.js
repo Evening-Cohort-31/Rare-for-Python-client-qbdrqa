@@ -25,3 +25,16 @@ export const createPost = (post) => {
         return {status: status, response: response}
         })
 }
+
+export const getPostByUserId = (userId) => {
+  return fetch(`${apiUrl}/posts?user_id=${userId}`, {
+    headers: {
+      "Accept": "application/json"
+    }
+  }).then(res => {
+    const status = res.status
+    const response = res.json();
+
+    return {status: status, response: response}
+  })
+}
