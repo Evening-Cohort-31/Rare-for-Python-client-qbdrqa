@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { createPost, editPost, getPostById } from "../../managers/PostManager.js";
+import { getAllTags } from "../../managers/TagManager.js";
 
 // A form for letting users create or edit a post
 export const PostForm = () => {
+    const [tags, setTags] = useState([])
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState({error: false, message:""});
     const [formData, setFormData] = useState({
         title: "",
         content: "",
         category_id: "",
+        tag_id: "",
         image_url: ""
     })
     const [searchParams, setSearchParams] = useSearchParams()
@@ -26,8 +29,21 @@ export const PostForm = () => {
 
     //Load form with post data if editing
     useEffect(() => {
+        setLoading(true)
+        getAllTags().then(async res => {
+            setLoading(false)
+            if (res.status === 200) {
+                setTags(await res.response)
+            } else if (res.status >= 400 && res.status < 500) {
+                setError({error: true, message: "Action not supported"})
+            } else if (res.status >= 500) {
+                setError({error: true, message: "Server error"})
+            } else {
+                setError({error: true, message: "An unexpected error has occurred"})
+            }
+        })
+        
         if (edit && postId) {
-            setLoading(true)
             getPostById(postId).then(async res => {
                 setLoading(false)
                 if (res.status === 200) {
