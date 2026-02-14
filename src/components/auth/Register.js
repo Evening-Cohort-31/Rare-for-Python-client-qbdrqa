@@ -24,7 +24,8 @@ export const Register = ({setToken}) => {
         last_name: lastName.current.value,
         email: email.current.value,
         password: password.current.value,
-        bio: bio.current.value
+        bio: bio.current.value,
+        type: "Author"
       }
 
       registerUser(newUser)
@@ -35,6 +36,8 @@ export const Register = ({setToken}) => {
           }
         })
     } else {
+      // Not implemented yet I think
+      // TODO: Implement show password error on password mismatch
       passwordDialog.current.showModal()
     }
   }

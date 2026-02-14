@@ -33,7 +33,11 @@ export const NavBar = ({ token, setToken }) => {
           {
             token
               ?
-              <Link to="/" className="navbar-item">Posts</Link>
+              <>
+                <Link to="/" className="navbar-item">Posts</Link>
+                <Link to="/new_post" className="navbar-item">New Post</Link>
+                <Link to={`/posts/${token}`} className="navbar-item">My Posts</Link>
+              </>
               :
               ""
           }
@@ -46,6 +50,7 @@ export const NavBar = ({ token, setToken }) => {
                 token
                   ?
                   <button className="button is-outlined" onClick={() => {
+                    localStorage.removeItem("auth_token")
                     setToken('')
                     navigate('/login')
                   }}>Logout</button>
