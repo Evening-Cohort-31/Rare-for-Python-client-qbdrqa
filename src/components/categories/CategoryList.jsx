@@ -8,7 +8,7 @@ export const CategoryList = () => {
 
     useEffect(() => {
         setLoading(true)
-        getCategories().then(res => res.json().then(async res => {
+        getCategories().then(async res => {
             setLoading(false)
             if (res.status === 200) {
                 const response = await res.response
@@ -20,7 +20,7 @@ export const CategoryList = () => {
             } else {
                 setError({error: true, message: "An unexpected error has occurred"})
             }
-        })).catch(err => {
+        }).catch(err => {
             setLoading(false)
             setError({error: true, message: "An unexpected error has occurred."})
         })
@@ -37,7 +37,7 @@ export const CategoryList = () => {
                 ) : categories.length > 0 ? categories.map(category => (
                     <div className="card" key={category.id} style={{ marginTop: "10px", minHeight: 50}}>
                         <header className="card-header">
-                            <p className="card-header-title">${category.label}</p>
+                            <p className="card-header-title">{category.label}</p>
                         </header>
                     </div>
                 )) : <>No Categories Found</>}

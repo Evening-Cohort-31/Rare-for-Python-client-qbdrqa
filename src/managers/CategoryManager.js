@@ -2,14 +2,14 @@ const apiUrl = "http://localhost:8000"
 
 // GET all categories
 export const getCategories = () => {
-    fetch(`${apiUrl}/categories`, {
+    return fetch(`${apiUrl}/categories`, {
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
-    }).then(async res => {
+    }).then(res => {
         const status = res.status
-        const response = await res.response
+        const response = res.json()
 
         return {status: status, response: response}
     })
@@ -17,16 +17,16 @@ export const getCategories = () => {
 
 //POST category
 export const createCategory = (category) => {
-    fetch(`${apiUrl}/categories`, {
+    return fetch(`${apiUrl}/categories`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
         },
         body: JSON.stringify(category)
-    }).then(async res => {
+    }).then(res => {
         const status = res.status
-        const response = await res.response
+        const response = res.json()
 
         return {status: status, response: response}
     })
@@ -34,14 +34,14 @@ export const createCategory = (category) => {
 
 //GET Category by ID
 export const getCategoryById = (id) => {
-    fetch(`${apiUrl}/categories/${id}`, {
+    return fetch(`${apiUrl}/categories/${id}`, {
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
-    }).then(async res => {
+    }).then(res => {
         const status = res.status
-        const response = await res.response
+        const response = res.json()
 
         return {status: status, response: response}
     })
