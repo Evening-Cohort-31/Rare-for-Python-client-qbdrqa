@@ -37,6 +37,8 @@ export const Register = ({setToken}) => {
           }
         })
     } else {
+      // Not implemented yet I think
+      // TODO: Implement show password error on password mismatch
       passwordDialog.current.showModal()
     }
   }
