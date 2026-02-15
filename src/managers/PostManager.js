@@ -10,7 +10,7 @@ export const getApprovedPublishedPosts = () => {
 
 // Create a new entry in the posts database
 export const createPost = (post) => {
-    return fetch(`${apiUrl}/new_post`, {
+    return fetch(`${apiUrl}/post`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

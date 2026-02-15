@@ -17,7 +17,7 @@ export const PostsList = () => {
         <section key={`post--${post.id}`} className="post">
           <h2>{post.title}</h2>
           <div>By {post.author}</div>
-          <div>Category: {post.category}</div>
+          <div>Category: {post.category.label}</div>
           <div>Published: <HumanDate date={post.publication_date} /></div>
         </section>
       ))}
