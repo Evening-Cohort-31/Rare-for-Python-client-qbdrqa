@@ -57,7 +57,7 @@ export const MyPosts = () => {
                         </header>
                         <div className="card-content">
                             <div className="content">
-                                <p>By: {post.user.username}</p>
+                                <p>By: {post?.user?.username}</p>
                                 <p>Category: {post.category.label}</p>
                             </div>
                         </div>
