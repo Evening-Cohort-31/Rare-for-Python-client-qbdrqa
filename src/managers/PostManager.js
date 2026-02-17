@@ -8,6 +8,14 @@ export const getApprovedPublishedPosts = () => {
   }).then(res => res.json())
 }
 
+export const getUnapprovedPosts = () => {
+  return fetch(`${apiUrl}/posts?approved=false`, {
+    headers: {
+      "Accept": "application/json"
+    }
+  })
+}
+
 // Create a new entry in the posts database
 export const createPost = (post) => {
     return fetch(`${apiUrl}/new_post`, {
@@ -64,6 +72,23 @@ export const getPostById = (id) => {
       "Content-Type": "application/json",
       "Accept": "application/json"
     }
+  }).then(res => {
+    const status = res.status
+    const response = res.json()
+
+    return {status: status, response: response}
+  })
+}
+
+export const approvePost = (id) => {
+  return fetch(`${apiUrl}/posts/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "approved" : true
+    })
   }).then(res => {
     const status = res.status
     const response = res.json()

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { createPost } from "../../managers/PostManager.js"
+import { IsAdmin } from "../utils/IsAdmin.js"
 
 //TODO: Possibly remove module if PostForm replaces it
 
@@ -29,7 +30,7 @@ export const CreatePostForm = () => {
             title: title.current.value,
             image_url: imageUrl.current.value,
             content: content.current.value,
-            approved: true
+            approved: IsAdmin()
         }
         createPost(newPost).then(async res => {
             setLoading(false)
