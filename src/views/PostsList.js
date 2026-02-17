@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { getApprovedPublishedPosts } from "../managers/PostManager"
-import { HumanDate } from "../components/utils/HumanDate"
+import { Post } from "../components/posts/Post.jsx"
 
 export const PostsList = () => {
   const [posts, setPosts] = useState([])
@@ -10,17 +10,14 @@ export const PostsList = () => {
   }, [])
 
   return (
-    <>
-      <h1>Posts</h1>
+    <div className="columns is-centered">
+      <div className="column is-one-third">
+      <h1 className="title">Posts</h1>
 
-      {posts.map(post => (
-        <section key={`post--${post.id}`} className="post">
-          <h2>{post.title}</h2>
-          <div>By {post.author}</div>
-          <div>Category: {post.category.label}</div>
-          <div>Published: <HumanDate date={post.publication_date} /></div>
-        </section>
+      {posts.length > 0 && posts.map(post => (
+        <Post post={post} key={post.id}/>
       ))}
-    </>
+      </div>
+    </div>
   )
 }

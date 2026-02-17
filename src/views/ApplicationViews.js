@@ -1,11 +1,11 @@
-import { Route, Routes } from "react-router-dom"
-import { Login } from "../components/auth/Login"
-import { Register } from "../components/auth/Register"
-import { Authorized } from "./Authorized"
-import { PostsList } from "./PostsList"
-import { MyPosts } from "../components/posts/MyPosts.jsx"
-import { PostForm } from "../components/posts/PostForm.jsx"
-import { ConditionalPostView } from "../components/posts/ConditionalPostView.jsx"
+import { Outlet, Route, Routes } from "react-router-dom";
+import { Login } from "../components/auth/Login";
+import { Register } from "../components/auth/Register";
+import { Authorized } from "./Authorized";
+import { PostsList } from "./PostsList";
+import { MyPosts } from "../components/posts/MyPosts.jsx";
+import { PostForm } from "../components/posts/PostForm.jsx";
+import { ConditionalPostView } from "../components/posts/ConditionalPostView.jsx";
 
 export const ApplicationViews = ({ token, setToken }) => {
   return (
@@ -15,14 +15,15 @@ export const ApplicationViews = ({ token, setToken }) => {
 
       <Route element={<Authorized token={token} />}>
         <Route path="/" element={<PostsList />} />
-        <Route path="/posts" element={<PostsList />} />
+        <Route path="/posts" element={<Outlet />}>
+          <Route path="" element={<PostsList />} />
+          <Route path="tags/:id" element={<>Coming Soon</>} />
+        </Route>
         {/* Add Routes here */}
-        <Route path="/new_post" element={<PostForm/>}/>
-        <Route path="/post/:id" element={<ConditionalPostView/>}/>
-        <Route path="/posts/:userId" element={<MyPosts/>}/>
-
+        <Route path="/new_post" element={<PostForm />} />
+        <Route path="/post/:id" element={<ConditionalPostView />} />
+        <Route path="/posts/:userId" element={<MyPosts />} />
       </Route>
-
     </Routes>
-  )
-}
+  );
+};
