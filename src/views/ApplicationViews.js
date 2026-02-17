@@ -8,6 +8,7 @@ import { PostForm } from "../components/posts/PostForm.jsx"
 import { ConditionalPostView } from "../components/posts/ConditionalPostView.jsx"
 import { Admin } from "./Admin.js"
 import { UnapprovedPosts } from "../components/admin/UnapprovedPosts.jsx"
+import { CategoryList } from "../components/categories/CategoryList.jsx"
 
 export const ApplicationViews = ({ token, setToken }) => {
   return (
@@ -25,6 +26,8 @@ export const ApplicationViews = ({ token, setToken }) => {
         <Route path="/admin" element={<Admin token={token}/>}>
           <Route path="unapproved_posts" element={<UnapprovedPosts/>}/>
         </Route>
+        <Route path="/categories" element={<CategoryList/>}/>
+
       </Route>
 
     </Routes>
