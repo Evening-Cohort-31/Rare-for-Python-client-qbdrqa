@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { createPost, editPost, getPostById } from "../../managers/PostManager.js";
+import { IsAdmin } from "../utils/IsAdmin.js";
 
 // A form for letting users create or edit a post
 export const PostForm = () => {
@@ -55,7 +56,7 @@ export const PostForm = () => {
     }, [edit, postId, navigate, userId])
 
     // Updates existing post or creates new one
-    const handleSubmitPost = (e) => {
+    const handleSubmitPost = async (e) => {
         setError({error: false, message: ""})
         e.preventDefault()
         setLoading(true)
@@ -66,7 +67,7 @@ export const PostForm = () => {
             title: formData.title,
             image_url: formData.image_url,
             content: formData.content,
-            approved: true,
+            approved: await IsAdmin(userId),
             ...(edit && { id: postId })
         };
 
