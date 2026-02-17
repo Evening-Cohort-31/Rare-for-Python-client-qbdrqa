@@ -63,7 +63,7 @@ export const PostForm = () => {
                         content: post.content,
                         category_id: post.category.id,
                         image_url: post.image_url || "",
-                        tags: post.tags || []
+                        tags: post.tags?.map(tag => String(tag.id)) || []
                     })
                 } else {
                     setError({error: true, message: "Error retrieving post information"})
@@ -186,7 +186,7 @@ export const PostForm = () => {
                             >
                                 <option value="">Select a Tag</option>
                                 {tags.map(tag => (
-                                    <option key={tag.id} value={tag.id}>{tag.label}</option>
+                                    <option key={tag.id} value={String(tag.id)}>{tag.label}</option>
                                 ))}
                             </select>
                         </div>
