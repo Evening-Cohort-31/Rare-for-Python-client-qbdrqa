@@ -6,6 +6,7 @@ import { PostsList } from "./PostsList"
 import { MyPosts } from "../components/posts/MyPosts.jsx"
 import { PostForm } from "../components/posts/PostForm.jsx"
 import { ConditionalPostView } from "../components/posts/ConditionalPostView.jsx"
+import { PostDetail } from "./PostDetail"
 import { UserList } from "../managers/UserList"
 import { Admin } from "./Admin.js"
 import { UnapprovedPosts } from "../components/admin/UnapprovedPosts.jsx"
@@ -17,6 +18,8 @@ export const ApplicationViews = ({ token, setToken }) => {
       <Route path="/login" element={<Login setToken={setToken} />} />
       <Route path="/register" element={<Register setToken={setToken} />} />
       <Route element={<Authorized token={token} />}>
+        <Route path="/posts" element={<PostsList />} />
+        <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path="/" element={<PostsList />} />
         <Route path="/posts" element={<PostsList />} />
         {/* Add Routes here */}
