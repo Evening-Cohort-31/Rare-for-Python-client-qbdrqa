@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { createPost, editPost, getPostById } from "../../managers/PostManager.js";
-<<<<<<< HEAD
 import { getAllTags } from "../../managers/TagManager.js";
-=======
 import { IsAdmin } from "../utils/IsAdmin.js";
->>>>>>> develop
 
 // A form for letting users create or edit a post
 export const PostForm = () => {
@@ -88,12 +85,8 @@ export const PostForm = () => {
             title: formData.title,
             image_url: formData.image_url,
             content: formData.content,
-<<<<<<< HEAD
             tags: formData.tags,
-            approved: true,
-=======
             approved: await IsAdmin(userId),
->>>>>>> develop
             ...(edit && { id: postId })
         };
 

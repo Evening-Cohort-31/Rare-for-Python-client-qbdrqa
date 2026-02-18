@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom"
 import { getPostByUserId } from "../../managers/PostManager.js"
 import { useEffect, useState } from "react"
-import { MdEdit } from "react-icons/md"
 import { Post } from "./Post.jsx"
 
 // Component to display a user's posts
@@ -45,28 +44,7 @@ export const MyPosts = () => {
                         <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
                     ))
                 ) : posts.length > 0 ? posts.map((post) => (
-<<<<<<< HEAD
                     <Post post={post} edit key={post.id}/>
-=======
-                    <div className="card" key={post.id} style={{marginTop: "10px"}}>
-                        <header className="card-header">
-                            <p className="card-header-title">{post.title}</p>
-                            <button className="card-header-icon" aria-label="edit">
-                                <span className="icon">
-                                    <MdEdit onClick={() => {
-                                        navigate(`/post/${post.id}?edit=true`)
-                                    }}/>
-                                </span>
-                            </button>
-                        </header>
-                        <div className="card-content">
-                            <div className="content">
-                                <p>By: {post?.user?.username}</p>
-                                <p>Category: {post.category.label}</p>
-                            </div>
-                        </div>
-                    </div>
->>>>>>> develop
                 )) : (
                     <p>No posts found.</p>
                 )}

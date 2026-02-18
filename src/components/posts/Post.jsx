@@ -1,5 +1,5 @@
 import { MdEdit } from "react-icons/md"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
 
 /**A card component for displaying PostData */
