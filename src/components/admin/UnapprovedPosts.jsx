@@ -18,8 +18,8 @@ export const UnapprovedPosts = () => {
                 ? {...post, approved: true}
                 : post
         ))
-        approvePost(postId)
-        getUnapprovedPosts().then(res => res.json().then(res => setPosts(res)))
+        approvePost(postId).then(
+        getUnapprovedPosts().then(res => res.json().then(res => setPosts(res))))
     }
 
     //TODO: Implement either a delete post on denial, or add denied property to posts to

@@ -18,6 +18,7 @@ export const Admin = ({ token }) => {
   if (isAdmin) {
     return <Outlet />;
   }
+  console.log("Not an admin!")
 
   return <Navigate to="/" replace />;
 };
