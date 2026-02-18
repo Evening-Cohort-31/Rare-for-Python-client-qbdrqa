@@ -27,14 +27,14 @@ export const getUnapprovedPosts = () => {
 
 // Create a new entry in the posts database
 export const createPost = (post) => {
-  return fetch(`${apiUrl}/new_post`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
-    body: JSON.stringify(post)
-  }).then(normalize)
+    return fetch(`${apiUrl}/post`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify(post)
+    }).then(normalize)
 }
 
 // Get All Specific User's posts

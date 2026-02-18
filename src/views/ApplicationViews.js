@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom"
+import { Outlet, Route, Routes } from "react-router-dom"
 import { Login } from "../components/auth/Login"
 import { Register } from "../components/auth/Register"
 import { Authorized } from "./Authorized"
@@ -19,9 +19,12 @@ export const ApplicationViews = ({ token, setToken }) => {
       <Route path="/register" element={<Register setToken={setToken} />} />
       <Route element={<Authorized token={token} />}>
         <Route path="/posts" element={<PostsList />} />
-        <Route path="/posts/:postId" element={<PostDetail />} />
+        <Route path="/post/:postId" element={<PostDetail />} />
         <Route path="/" element={<PostsList />} />
-        <Route path="/posts" element={<PostsList />} />
+        <Route path="/posts" element={<Outlet />}>
+          <Route path="" element={<PostsList />} />
+          <Route path="tags/:id" element={<>Coming Soon</>} />
+        </Route>
         {/* Add Routes here */}
         <Route path="/new_post" element={<PostForm/>}/>
         <Route path="/post/:id" element={<ConditionalPostView/>}/>
@@ -33,7 +36,6 @@ export const ApplicationViews = ({ token, setToken }) => {
           <Route path="unapproved_posts" element={<UnapprovedPosts/>}/>
         </Route>
       </Route>
-
     </Routes>
-  )
-}
+  );
+};
