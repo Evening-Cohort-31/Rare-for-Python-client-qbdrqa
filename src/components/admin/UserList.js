@@ -13,7 +13,7 @@ export const UserList = () => {
   const [user, setUser] = useState(null);
   const [filters, setFilters] = useState([])
   const [displayedUsers, setDisplayedUsers] = useState([])
-  const [activeFilter, setActiveFilter] = useState({active: false, selected: "all"})
+  const [activeFilter, setActiveFilter] = useState({active: false, selected: "active"})
 
   useEffect(() => {
     setLoading(true);
