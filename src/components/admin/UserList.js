@@ -4,12 +4,16 @@ import {
   toggleUserActivation,
 } from "../../managers/UserManager.js";
 import { Link } from "react-router-dom";
+import { BiDownArrow } from "react-icons/bi";
 
 export const UserList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  const [filters, setFilters] = useState([])
+  const [displayedUsers, setDisplayedUsers] = useState([])
+  const [activeFilter, setActiveFilter] = useState({active: false, selected: "all"})
 
   useEffect(() => {
     setLoading(true);
@@ -19,12 +23,25 @@ export const UserList = () => {
         console.log("Users API response:", data);
         if (Array.isArray(data)) {
           setUsers(data);
+          setDisplayedUsers(data)
         } else {
           setError("Invalid response from server");
         }
       })
       .catch((err) => setError(err.message));
   }, []);
+
+  useEffect(() => {
+    const filteredUsers = users.filter((user) => {
+      let include = true
+      filters.length > 0 && filters.forEach(filter => {
+        if (user[filter.type] !== filter.value)
+          include = false
+      })
+      return include
+    })
+    setDisplayedUsers(filteredUsers)
+  }, [filters, users])
 
   const handleToggleUserActivation = (user) => {
     const newStatus = !user.active;
@@ -38,6 +55,17 @@ export const UserList = () => {
     });
     setUser(null);
   };
+
+  const handleActiveFilter = (filterString) => {
+    setActiveFilter({active: false, selected: filterString})
+
+    if (filterString === "all") {
+      setFilters(filters.filter(f => f.type !== "active"))
+    } else {
+      const activeValue = filterString === "active" ? 1 : 0
+      const otherFilters = filters.filter(f => f.type !== "active")
+      setFilters([...otherFilters, {type: "active", value: activeValue}])
+    }}
 
   return (
     <div className="container">
@@ -67,7 +95,7 @@ export const UserList = () => {
       )}
       <h1 className="title is-3 my-4">All User Profiles</h1>
       {error && <div className="notification is-danger">{error}</div>}
-      {!error && users.length === 0 && (
+      {!error && displayedUsers.length === 0 && (
         !loading && <div className="notification is-warning">No users found.</div>
       )}
       <table className="table is-fullwidth is-striped">
@@ -77,7 +105,44 @@ export const UserList = () => {
             <th>Full Name</th>
             <th>Email</th>
             <th>Type</th>
-            <th>Active</th>
+            <th>
+              <div 
+                className={`dropdown ${activeFilter.active ? "is-active" : ""}`}
+                tabIndex={0}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget)) {
+                  setActiveFilter({...activeFilter, active: false})}
+                }
+                }
+              >
+                <div className="dropdown-trigger">
+                  <button className="button" aria-haspopup="true" aria-controls="dropdown-menu" onClick={() => setActiveFilter({...activeFilter, active: !activeFilter.active})}>
+                    <span>Active</span>
+                    <span className="icon is-small">
+                      <BiDownArrow/>
+                    </span>
+                  </button>
+                </div>
+                <div className="dropdown-menu" id="dropdown-menu" role="menu"
+                >
+                  <div className="dropdown-content">
+                    <button 
+                    className={`dropdown-item ${activeFilter.selected === "all" && "is-selected"}`}
+                    onClick={() => {handleActiveFilter("all")}}
+                    >View All</button>
+                    <button 
+                      className={`dropdown-item ${activeFilter.selected === "active" && 'is-selected'}`} 
+                      onClick={() => {
+                      handleActiveFilter("active")
+                    }}>View Active</button>
+                    <button 
+                      className={`dropdown-item ${activeFilter.selected === "inactive" && 'is-selected'}`}
+                      onClick={() => handleActiveFilter("inactive")}
+                    >View Inactive</button>
+                  </div>
+                </div>
+              </div>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -94,7 +159,7 @@ export const UserList = () => {
             </tr>
           )):
 
-          users.map((user) => (
+          displayedUsers.map((user) => (
             <tr key={user.id}>
               <td>
                 <Link to={`/users/${user.id}`}>{user.username}</Link>
