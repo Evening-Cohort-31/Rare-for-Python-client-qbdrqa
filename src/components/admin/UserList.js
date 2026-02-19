@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getAllUsers } from "./UserManager"
+import { getAllUsers } from "../../managers/UserManager.js"
 import { Link } from "react-router-dom"
 
 export const UserList = () => {
