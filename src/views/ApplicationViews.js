@@ -11,7 +11,7 @@ import { UserList } from "../components/admin/UserList.js";
 import { Admin } from "./Admin.js";
 import { UnapprovedPosts } from "../components/admin/UnapprovedPosts.jsx";
 import { CategoryList } from "../components/categories/CategoryList.jsx";
-
+import { CategoryManagement } from "../components/admin/CategoryManagement.js";
 export const ApplicationViews = ({ token, setToken }) => {
   return (
     <Routes>
@@ -35,6 +35,7 @@ export const ApplicationViews = ({ token, setToken }) => {
           <Route path="" element={<>Test</>} />
           <Route path="unapproved_posts" element={<UnapprovedPosts />} />
           <Route path="users" element={<UserList />} />
+          <Route path="categories" element={<CategoryManagement />}/>
         </Route>
       </Route>
     </Routes>
