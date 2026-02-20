@@ -19,11 +19,12 @@ export const PostsList = () => {
   return (
     <div className="columns is-centered">
       <div className="column is-one-third">
-      <h1 className="title">Posts</h1>
+        <h1 className="title">Posts</h1>
 
-      {posts.length > 0 && posts.map(post => (
-        <Post post={post} key={post.id}/>
-      ))}
+        {posts.length > 0 &&
+          posts.map((post) => (
+            <Post post={post} key={post.id} />
+          ))}
       </div>
     </div>
   )
