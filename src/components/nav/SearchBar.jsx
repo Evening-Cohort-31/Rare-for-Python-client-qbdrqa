@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
-import { Link } from "react-router-dom"
 
 export const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState("")
     const [allTags, setAllTags] = useState([])
-    const [filteredTags, setFilteredTags] = useState([])
 
     useEffect(() => {
         getAllTags().then(({status, response}) => {
@@ -15,9 +13,9 @@ export const SearchBar = () => {
         })
     }, [])
 
-    useEffect(() => {
-        setFilteredTags(allTags.filter(tag => tag.label.toLowerCase().includes(searchTerm.toLowerCase())))
-    }, [searchTerm, allTags])
+    const filteredTags = useMemo(() => 
+        allTags.filter(tag => tag.label.toLowerCase().includes(searchTerm.toLowerCase())
+), [searchTerm, allTags])
 
     return (
         <div 
