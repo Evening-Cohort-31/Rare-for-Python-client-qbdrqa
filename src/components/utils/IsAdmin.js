@@ -6,6 +6,8 @@ export const IsAdmin = async (userId) => {
         },
     }).then(async res => {
         const response = await res.json()
+
+        console.log(response)
         
         return response.type === "Admin"
     })

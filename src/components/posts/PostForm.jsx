@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { createPost, editPost, getPostById } from "../../managers/PostManager.js";
 import { getAllTags } from "../../managers/TagManager.js";
 import { IsAdmin } from "../utils/IsAdmin.js";
 
 // A form for letting users create or edit a post
-export const PostForm = () => {
+export const PostForm = ({edit = false}) => {
     const [tags, setTags] = useState([])
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState({error: false, message:""});
@@ -17,12 +17,10 @@ export const PostForm = () => {
         image_url: ""
     })
     
-    const [searchParams, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
     const params = useParams()
 
     const postId = params.id
-    const edit = Boolean(searchParams.get("edit"))
 
     const userId = Number(localStorage.getItem("auth_token"))
 
