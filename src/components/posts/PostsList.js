@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { getApprovedPublishedPosts } from "../managers/PostManager"
-import { Post } from "../components/posts/Post.jsx"
+import { getApprovedPublishedPosts } from "../../managers/PostManager.js"
+import { Post } from "./Post.jsx"
 
 export const PostsList = () => {
   const [posts, setPosts] = useState([])
