@@ -12,6 +12,7 @@ export const Post = ({ post, edit = false, detail = false }) => {
   const [allTags, setAllTags] = useState([])
   const [postTags, setPostTags] = useState(post?.tags ?? [])
   const navigate = useNavigate()
+  const [loadingTags, setLoadingTags] = useState(false)
 
   const safePostTags = useMemo(() => post?.tags ?? [], [post])
 
@@ -42,17 +43,17 @@ export const Post = ({ post, edit = false, detail = false }) => {
     editPost({ ...post, tags: filteredOut })
   }
 
-  useEffect(() => {
-    if (!edit) return
-
-    getAllTags().then((res) =>
-      res.response.then((tags) => {
-        const currentTagIds = (post?.tags ?? []).map((ptag) => ptag.id)
-        const filterCurrentTags = tags.filter((tag) => !currentTagIds.includes(tag.id))
-        setAllTags(filterCurrentTags)
-      })
-    )
-  }, [post, searchTerm, edit])
+useEffect(() => {
+        if (showTagManager) {
+            getAllTags().then(res => res.response.then((res) => {
+                const filterCurrentTags = res.filter(tag => 
+                    !postTags.map(ptag => ptag.id).includes(tag.id)
+                )
+                setLoadingTags(false)
+                setAllTags(filterCurrentTags)
+            }))
+        }
+    }, [showTagManager, postTags])
 
   const tagManager = (
     <div className="message is-info">
@@ -167,26 +168,30 @@ export const Post = ({ post, edit = false, detail = false }) => {
               ) : (
                 <div className="tags has-addons mb-4" key={tag.id}>
                   <span className="tag is-primary">{tag.label}</span>
-                  <button
+                  {!loadingTags && <button
                     className="tag is-delete"
                     value={tag.id}
                     onClick={handleRemoveTag}
-                  ></button>
+                  ></button>}
                 </div>
               )
             )}
 
             {edit && !showTagManager && (
-              <button className="tag is-link" onClick={() => setShowTagManager(true)}>
+              <button 
+                className="tag is-link" 
+                onClick={() => { 
+                  setLoadingTags(true)
+                  setShowTagManager(true)}}>
                 Manage Tags
               </button>
             )}
           </div>
 
-          {showTagManager && tagManager}
+          {showTagManager && !loadingTags && tagManager}
 
           <strong>Published: </strong>
-          <HumanDate date={post.publication_date} />
+          <HumanDate date={post?.publication_date} />
         </div>
       </div>
     </div>

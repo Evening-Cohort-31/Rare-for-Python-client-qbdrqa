@@ -3,11 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { createPost, editPost, getPostById } from "../../managers/PostManager.js";
 import { getAllTags } from "../../managers/TagManager.js";
 import { IsAdmin } from "../utils/IsAdmin.js";
+import { getCategories } from "../../managers/CategoryManager.js";
 
 // A form for letting users create or edit a post
 export const PostForm = ({edit = false}) => {
     const [tags, setTags] = useState([])
     const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState([])
     const [error, setError] = useState({error: false, message:""});
     const [formData, setFormData] = useState({
         title: "",
@@ -20,56 +22,79 @@ export const PostForm = ({edit = false}) => {
     const navigate = useNavigate()
     const params = useParams()
 
-    const postId = params.id
+    const postId = params.postId
 
     const userId = Number(localStorage.getItem("auth_token"))
 
-    //TODO: Create a CategoryManager and getCategories function
-    const categories = [{id: 1, label: "Life"}, {id: 2, label: "Work"}, {id: 3, label: "Hobby"}, {id: 4, label: "Fluff"}]
-
-    //Load form with post data if editing
+    // Load categories and tags on mount
     useEffect(() => {
         setLoading(true)
-        getAllTags().then(async res => {
-            setLoading(false)
-            if (res.status === 200) {
-                setTags(await res.response)
-            } else if (res.status >= 400 && res.status < 500) {
-                setError({error: true, message: "Action not supported"})
-            } else if (res.status >= 500) {
-                setError({error: true, message: "Server error"})
-            } else {
-                setError({error: true, message: "An unexpected error has occurred"})
+        
+        const loadFormData = async () => {
+            try {
+                const [categoriesRes, tagsRes] = await Promise.all([
+                    getCategories(),
+                    getAllTags()
+                ]);
+                
+                setCategories(await categoriesRes.response);
+                
+                if (tagsRes.status === 200) {
+                    setTags(await tagsRes.response);
+                } else if (tagsRes.status >= 400 && tagsRes.status < 500) {
+                    setError({error: true, message: "Action not supported"});
+                } else if (tagsRes.status >= 500) {
+                    setError({error: true, message: "Server error"});
+                } else {
+                    setError({error: true, message: "An unexpected error has occurred"});
+                }
+            } catch (err) {
+                setError({error: true, message: "Failed to load form data"});
+            } finally {
+                setLoading(false);
             }
-        })
+        };
+        
+        loadFormData();
+    }, []);
 
+    // Load post data when editing
+    useEffect(() => {
         if (edit && postId) {
+            setLoading(true);
+            
             getPostById(postId).then(async res => {
-                setLoading(false)
+                setLoading(false);
+                
                 if (res.status === 200) {
-                    const post = await res.response
+                    const post = await res.response;
+                    
                     if (post.user.id !== userId) {
                         // Routes to home page if user tries to edit another user's posts
-                        //TODO: Need to add better handling for his, i.e. refuse to navigate to page at all
-                        setError({error: true, message: "You do not have permission to edit this post"})
+                        //TODO: Need to add better handling for this, i.e. refuse to navigate to page at all
+                        setError({error: true, message: "You do not have permission to edit this post"});
                         setTimeout(() => {
-                            navigate("/")
-                        }, 3000)
-                        return
+                            navigate("/");
+                        }, 3000);
+                        return;
                     }
+                    
                     setFormData({
                         title: post.title,
                         content: post.content,
                         category_id: post.category.id,
                         image_url: post.image_url || "",
                         tags: post.tags?.map(tag => String(tag.id)) || []
-                    })
+                    });
                 } else {
-                    setError({error: true, message: "Error retrieving post information"})
+                    setError({error: true, message: "Error retrieving post information"});
                 }
-            })
+            }).catch(err => {
+                setLoading(false);
+                setError({error: true, message: "Failed to load post data"});
+            });
         }
-    }, [edit, postId, navigate, userId])
+    }, [edit, postId, navigate, userId]);
 
     // Updates existing post or creates new one
     const handleSubmitPost = async (e) => {
@@ -163,7 +188,7 @@ export const PostForm = ({edit = false}) => {
                                 required
                             >
                                 <option value="">Select a Category</option>
-                                {categories.map(cat => (
+                                {categories && categories.map(cat => (
                                     <option key={cat.id} value={cat.id}>{cat.label}</option>
                                 ))}
                             </select>

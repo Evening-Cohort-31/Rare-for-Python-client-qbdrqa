@@ -6,5 +6,5 @@ export const ConditionalPostView = () => {
   const [searchParams] = useSearchParams()
   const edit = searchParams.get("edit")
 
-  return edit ? <PostForm /> : <PostDetail />
+  return edit ? <PostForm edit/> : <PostDetail />
 }
