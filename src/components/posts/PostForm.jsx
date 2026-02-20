@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react"
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { createPost, editPost, getPostById } from "../../managers/PostManager.js";
+import { getAllTags } from "../../managers/TagManager.js";
 import { IsAdmin } from "../utils/IsAdmin.js";
 
 // A form for letting users create or edit a post
-export const PostForm = () => {
+export const PostForm = ({edit = false}) => {
+    const [tags, setTags] = useState([])
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState({error: false, message:""});
     const [formData, setFormData] = useState({
         title: "",
         content: "",
         category_id: "",
+        tags: [],
         image_url: ""
     })
-    const [searchParams, setSearchParams] = useSearchParams()
+    
     const navigate = useNavigate()
     const params = useParams()
 
     const postId = params.id
-    const edit = Boolean(searchParams.get("edit"))
 
     const userId = Number(localStorage.getItem("auth_token"))
 
@@ -27,13 +29,26 @@ export const PostForm = () => {
 
     //Load form with post data if editing
     useEffect(() => {
+        setLoading(true)
+        getAllTags().then(async res => {
+            setLoading(false)
+            if (res.status === 200) {
+                setTags(await res.response)
+            } else if (res.status >= 400 && res.status < 500) {
+                setError({error: true, message: "Action not supported"})
+            } else if (res.status >= 500) {
+                setError({error: true, message: "Server error"})
+            } else {
+                setError({error: true, message: "An unexpected error has occurred"})
+            }
+        })
+
         if (edit && postId) {
-            setLoading(true)
             getPostById(postId).then(async res => {
                 setLoading(false)
                 if (res.status === 200) {
                     const post = await res.response
-                    if (post.user_id !== userId) {
+                    if (post.user.id !== userId) {
                         // Routes to home page if user tries to edit another user's posts
                         //TODO: Need to add better handling for his, i.e. refuse to navigate to page at all
                         setError({error: true, message: "You do not have permission to edit this post"})
@@ -45,8 +60,9 @@ export const PostForm = () => {
                     setFormData({
                         title: post.title,
                         content: post.content,
-                        category_id: post.category_id,
-                        image_url: post.image_url || ""
+                        category_id: post.category.id,
+                        image_url: post.image_url || "",
+                        tags: post.tags?.map(tag => String(tag.id)) || []
                     })
                 } else {
                     setError({error: true, message: "Error retrieving post information"})
@@ -67,6 +83,7 @@ export const PostForm = () => {
             title: formData.title,
             image_url: formData.image_url,
             content: formData.content,
+            tags: formData.tags,
             approved: await IsAdmin(userId),
             ...(edit && { id: postId })
         };
@@ -151,6 +168,30 @@ export const PostForm = () => {
                                 ))}
                             </select>
                         </div>
+                    </div>
+                </div>
+
+                <div className="field">
+                    <label className="label">Tags</label>
+                    <div className="control">
+                        <div className="select is-multiple">
+                            <select
+                                multiple
+                                value={formData.tags}
+                                onChange={(e) => {
+                                    const selectedValues = Array.from(e.target.selectedOptions, option => option.value);
+                                    setFormData({...formData, tags: selectedValues});
+                                }}
+                            >
+                                <option value="">Select a Tag</option>
+                                {tags.map(tag => (
+                                    <option key={tag.id} value={String(tag.id)}>{tag.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="help">
+                        <p>Multiple items can be selected by clicking while holding ctrl</p>
                     </div>
                 </div>
 

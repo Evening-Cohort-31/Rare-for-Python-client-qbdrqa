@@ -13,13 +13,18 @@ export const UnapprovedPosts = () => {
 
     const handleApprove = (post) => {
         const postId = post.id
-        setPosts(posts.map(post =>
-            post.id === postId
-                ? {...post, approved: true}
-                : post
-        ))
+        setLoading(true)
         approvePost(postId)
-        getUnapprovedPosts().then(res => res.json().then(res => setPosts(res)))
+            .then(() => getUnapprovedPosts())
+            .then(res => res.json())
+            .then(res => {
+                setPosts(res)
+                setLoading(false)
+            })
+            .catch(err => {
+                setError({error: true, message: "Failed to approve post"})
+                setLoading(false)
+            })
     }
 
     //TODO: Implement either a delete post on denial, or add denied property to posts to
@@ -30,6 +35,7 @@ export const UnapprovedPosts = () => {
         const postId = post.id
         setPosts(posts.filter(post => post.id !== postId))
     }
+
     return (
         <div className="columns is-centered">
             <div className="column is-one-third">

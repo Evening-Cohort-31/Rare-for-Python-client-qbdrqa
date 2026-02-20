@@ -26,8 +26,9 @@ export const ApplicationViews = ({ token, setToken }) => {
         <Route path="/post/:id/comments" element={<PostComments />} />
         <Route path="/post/:id/comments/new" element={<CommentForm />} />
         <Route path="/posts/:userId" element={<MyPosts />} />
+
         <Route path="/admin" element={<Admin token={token} />}>
-        <Route path="unapproved_posts" element={<UnapprovedPosts />} />
+          <Route path="unapproved_posts" element={<UnapprovedPosts />} />
         </Route>
 
         <Route path="/categories" element={<CategoryList />} />
