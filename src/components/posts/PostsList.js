@@ -1,22 +1,34 @@
 import { useEffect, useState } from "react"
-import { getApprovedPublishedPosts, getPostByTag } from "../../managers/PostManager.js"
+import { getApprovedPublishedPosts, getPostByTag, searchPostsByTitle } from "../../managers/PostManager.js"
 import { Post } from "./Post.jsx"
-import { useParams } from "react-router-dom"
+import { useLocation, useParams, useSearchParams } from "react-router-dom"
 
 export const PostsList = () => {
   const [posts, setPosts] = useState([])
+  const [searchParams] = useSearchParams()
   const params = useParams()
+  const location = useLocation()
 
-  const isTagRoute = !!params.tagId
+    const isTagRoute = !!params.tagId
 
   useEffect(() => {
-    isTagRoute ? 
+    if (searchParams.has("title")) {
+      if (location.state && location.state > 0) {
+        setPosts(location.state)
+      } else {
+        searchPostsByTitle(searchParams.get("title")).then(({status, response}) => {
+          if (status >=200 && status < 300)
+            response.then(setPosts)
+        })
+      }
+
+    }  else if (isTagRoute) {
       getPostByTag(params.tagId).then(({status, response}) => {
         if (status >=200 && status < 300) {
           response.then(setPosts)
         }
       })
-    :
+    } else {
     getApprovedPublishedPosts().then(({ status, response }) => {
       if (status >= 200 && status < 300) {
         response.then(setPosts)
@@ -25,7 +37,8 @@ export const PostsList = () => {
         setPosts([])
       }
     })
-  }, [params, isTagRoute])
+    }
+  }, [params, isTagRoute, location, searchParams])
 
 
 

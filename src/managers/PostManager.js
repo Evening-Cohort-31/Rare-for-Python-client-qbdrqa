@@ -99,3 +99,12 @@ export const getPostByTag = (tagId) => {
     }
   }).then(normalize)
 }
+
+export const searchPostsByTitle = (searchTerm) => {
+  return fetch(`${apiUrl}/posts?title=${searchTerm}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+  }).then(normalize)
+}

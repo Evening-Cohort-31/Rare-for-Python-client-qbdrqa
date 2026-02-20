@@ -20,8 +20,7 @@ export const ApplicationViews = ({ token, setToken }) => {
       <Route element={<Authorized token={token} />}>
         <Route path="/" element={<PostsList />} />
         <Route path="/post" element={<Outlet />}>
-          <Route path="" element={<PostDetail />}/>
-          <Route path="post/:postId" element={<ConditionalPostView/>}/>
+          <Route path=":postId" element={<ConditionalPostView/>}/>
           <Route path="edit/:id" element={<PostForm edit/>}/>
         </Route>
         <Route path="/posts" element={<Outlet />}>
