@@ -11,7 +11,7 @@ export const UserList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-  const [filters, setFilters] = useState([])
+  const [filters, setFilters] = useState([{type: "active", value: 1}])
   const [displayedUsers, setDisplayedUsers] = useState([])
   const [activeFilter, setActiveFilter] = useState({active: false, selected: "active"})
 
