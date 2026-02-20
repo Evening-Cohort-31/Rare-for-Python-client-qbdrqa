@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react"
-import { getApprovedPublishedPosts } from "../../managers/PostManager.js"
+import { getApprovedPublishedPosts, getPostByTag } from "../../managers/PostManager.js"
 import { Post } from "./Post.jsx"
+import { useParams } from "react-router-dom"
 
 export const PostsList = () => {
   const [posts, setPosts] = useState([])
+  const params = useParams()
+
+  const isTagRoute = !!params.tagId
 
   useEffect(() => {
+    isTagRoute ? 
+      getPostByTag(params.tagId).then(({status, response}) => {
+        if (status >=200 && status < 300) {
+          response.then(setPosts)
+        }
+      })
+    :
     getApprovedPublishedPosts().then(({ status, response }) => {
       if (status >= 200 && status < 300) {
         response.then(setPosts)
@@ -14,7 +25,9 @@ export const PostsList = () => {
         setPosts([])
       }
     })
-  }, [])
+  }, [params, isTagRoute])
+
+
 
   return (
     <div className="columns is-centered">
