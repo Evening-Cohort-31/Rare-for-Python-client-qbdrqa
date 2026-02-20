@@ -2,6 +2,7 @@ import { useRef } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import "./NavBar.css"
 import Logo from "./rare.jpeg"
+import { SearchBar } from "./SearchBar.jsx"
 
 export const NavBar = ({ token, setToken }) => {
   const navigate = useNavigate()
@@ -46,6 +47,9 @@ export const NavBar = ({ token, setToken }) => {
         </div>
 
         <div className="navbar-end">
+          <div className="navbar-item">
+              <SearchBar />
+          </div>
           <div className="navbar-item">
             <div className="buttons">
               {
