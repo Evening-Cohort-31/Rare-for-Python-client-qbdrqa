@@ -90,3 +90,21 @@ export const approvePost = (id) => {
     return {status: status, response: response}
   })
 }
+
+export const getPostByTag = (tagId) => {
+  return fetch(`${apiUrl}/posts?tag_id=${tagId}`, {
+    headers: {
+      "Content-Type" : "application/json",
+      "Accept": "application/json"
+    }
+  }).then(normalize)
+}
+
+export const searchPostsByTitle = (searchTerm) => {
+  return fetch(`${apiUrl}/posts?title=${searchTerm}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+  }).then(normalize)
+}

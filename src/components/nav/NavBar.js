@@ -2,6 +2,8 @@ import { useRef } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import "./NavBar.css"
 import Logo from "./rare.jpeg"
+import { AdminNavLinks } from "./AdminNavLinks.jsx"
+import { SearchBar } from "./SearchBar.jsx"
 
 export const NavBar = ({ token, setToken }) => {
   const navigate = useNavigate()
@@ -37,8 +39,8 @@ export const NavBar = ({ token, setToken }) => {
                 <Link to="/" className="navbar-item">Posts</Link>
                 <Link to="/new_post" className="navbar-item">New Post</Link>
                 <Link to={`/posts/${token}`} className="navbar-item">My Posts</Link>
-                <Link to="/categories" className="navbar-item">Categories</Link>
-                <Link to="/users" className="navbar-item">User Profiles</Link>
+                <Link to={`/categories`} className="navbar-item">Categories</Link>
+                <AdminNavLinks token={token} />
               </>
               :
               ""
@@ -46,6 +48,9 @@ export const NavBar = ({ token, setToken }) => {
         </div>
 
         <div className="navbar-end">
+          <div className="navbar-item">
+              <SearchBar />
+          </div>
           <div className="navbar-item">
             <div className="buttons">
               {

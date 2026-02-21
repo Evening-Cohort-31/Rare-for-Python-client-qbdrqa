@@ -1,3 +1,9 @@
+const normalize = (res) => {
+  const status = res.status
+  const response = res.json()
+  return { status, response }
+}
+
 export const getAllUsers = () => {
   return fetch("http://localhost:8000/users", {
     headers: {
@@ -10,4 +16,16 @@ export const getAllUsers = () => {
       }
       return res.json()
     })
+}
+
+export const toggleUserActivation = (user) => {
+  return fetch(`http://localhost:8000/users/${user.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "Application/json"
+    },
+    body: JSON.stringify(user)
+  })
+    .then(normalize)
 }
