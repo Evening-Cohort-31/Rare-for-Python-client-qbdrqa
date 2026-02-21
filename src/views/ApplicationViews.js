@@ -35,6 +35,10 @@ export const ApplicationViews = ({ token, setToken }) => {
           <Route path='edit/:id' element={<PostForm />}/>
           <Route path="tags/:tagId" element={<PostsList />} />
         </Route>
+        <Route path="/users" element={<Outlet />}>
+          <Route path=":userId" element={<>Profile Coming Soon</>}/>
+          <Route path=":userId/posts" element={<MyPosts />}/>
+        </Route>
         <Route path="/new_post" element={<PostForm/>}/>
         <Route path="/categories" element={<CategoryList />} />
         <Route path="/users" element={<UserList />} />

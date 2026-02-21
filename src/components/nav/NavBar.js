@@ -4,6 +4,10 @@ import "./NavBar.css"
 import Logo from "./rare.jpeg"
 import { AdminNavLinks } from "./AdminNavLinks.jsx"
 import { SearchBar } from "./SearchBar.jsx"
+import { ImProfile } from "react-icons/im"
+import { RxAvatar } from "react-icons/rx"
+import { RiAccountCircle2Fill } from "react-icons/ri"
+import { MdAccountCircle, MdOutlineAccountCircle } from "react-icons/md"
 
 export const NavBar = ({ token, setToken }) => {
   const navigate = useNavigate()
@@ -56,11 +60,20 @@ export const NavBar = ({ token, setToken }) => {
               {
                 token
                   ?
-                  <button className="button is-outlined" onClick={() => {
-                    localStorage.removeItem("auth_token")
-                    setToken('')
-                    navigate('/login')
-                  }}>Logout</button>
+                  <>
+                      <button className="button is-outlined" onClick={() => navigate(`/user/${token}`)}>
+                        <span className="icon is-large">
+                          <MdAccountCircle />
+                        </span>
+                        <span>Profile</span>
+                      </button>
+                    <button className="button is-outlined" onClick={() => {
+                      localStorage.removeItem("auth_token")
+                      setToken('')
+                      navigate('/login')
+                    }}>Logout</button>
+
+                  </>
                   :
                   <>
                     <Link to="/register" className="button is-link">Register</Link>
