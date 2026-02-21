@@ -1,4 +1,4 @@
-import { useMatch, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { getPostByUserId } from "../../managers/PostManager.js"
 import { useEffect, useMemo, useState } from "react"
 import { Post } from "./Post.jsx"
@@ -44,7 +44,7 @@ export const MyPosts = () => {
     // Better styling, loading indicator, error handling/message displays
     return (
         <div className="columns is-centered">
-            <div className="column is-one-third">
+            <div className="column is-half">
                 <h1 className={`title ${loading ? "has-skeleton" : ""}`}>{`${user?.username || user?.author}'s Posts`}</h1>
                 {/*Displays a skeleton while loading */}
                 {loading ? (
