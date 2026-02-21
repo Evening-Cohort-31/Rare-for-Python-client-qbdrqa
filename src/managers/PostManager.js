@@ -108,3 +108,12 @@ export const searchPostsByTitle = (searchTerm) => {
     }
   }).then(normalize)
 }
+
+export const deletePost = (id) => {
+  return fetch(`${apiUrl}/posts/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }).then(normalize)
+}
