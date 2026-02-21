@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
 import { useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
-import { editPost } from "../../managers/PostManager.js"
+import { editPost, deletePost } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
 import { getCommentsByPostId } from "../../managers/CommentManager.js"
 import { BiUpArrow } from "react-icons/bi"
@@ -171,6 +171,25 @@ useEffect(() => {
             </span>
           </button>
         )}
+
+        {edit && (
+          <button
+            className="card-header-icon has-text-danger"
+            aria-label="delete post"
+            onClick={() => {
+              const confirmed = window.confirm("Are you sure you want to delete this post?")
+              if (confirmed) {
+                deletePost(post.id).then(() => {
+                  navigate("/")
+                })
+              }
+            }}
+          >
+            🗑️ Delete
+          </button>
+        )}
+
+
       </header>
 
       <div className="card-content pt-0">
