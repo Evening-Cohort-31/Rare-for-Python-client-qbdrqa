@@ -40,8 +40,6 @@ export const PostsList = () => {
     }
   }, [params, isTagRoute, location, searchParams])
 
-
-
   return (
     <div className="columns is-centered">
       <div className="column is-one-third">

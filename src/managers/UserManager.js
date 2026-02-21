@@ -38,3 +38,12 @@ export const getUserById = (userId) => {
     }
   }).then(normalize)
 }
+
+export const getHomePage = (userId) => {
+  return fetch(`http://localhost:8000/home_page/${userId}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+  }).then(normalize)
+}
