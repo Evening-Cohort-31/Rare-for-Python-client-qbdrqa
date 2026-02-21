@@ -61,7 +61,7 @@ export const NavBar = ({ token, setToken }) => {
                 token
                   ?
                   <>
-                      <button className="button is-outlined" onClick={() => navigate(`/user/${token}`)}>
+                      <button className="button is-outlined" onClick={() => navigate(`/users/${token}`)}>
                         <span className="icon is-large">
                           <MdAccountCircle />
                         </span>
