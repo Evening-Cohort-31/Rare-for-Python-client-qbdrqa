@@ -170,7 +170,7 @@ useEffect(() => {
           <div>
             <div>
               <strong>By: </strong>
-              <Link to={`/users/${post.user.id}/posts`} className="has-text-primary">{post.user.username || post.user.author}</Link>
+              <Link to={`/users/${post.user.id}`} className="has-text-primary">{post.user.username || post.user.author}</Link>
             </div>
             <div>
               <strong>Category: </strong>
