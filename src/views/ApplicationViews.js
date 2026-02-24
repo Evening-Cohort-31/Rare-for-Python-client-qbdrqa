@@ -13,6 +13,7 @@ import { PostComments } from "./PostComments"
 import { CommentForm } from "./CommentForm"
 import { UserList } from "../components/admin/UserList.js"
 import { CategoryManagement } from "../components/admin/CategoryManagement.js"
+import { Profile } from "../components/profile/Profile.jsx"
 
 export const ApplicationViews = ({ token, setToken }) => {
   return (
@@ -34,6 +35,10 @@ export const ApplicationViews = ({ token, setToken }) => {
           <Route path=":userId" element={<MyPosts />}/>
           <Route path='edit/:id' element={<PostForm />}/>
           <Route path="tags/:tagId" element={<PostsList />} />
+        </Route>
+        <Route path="/users" element={<Outlet />}>
+          <Route path=":userId" element={<Profile />}/>
+          <Route path=":userId/posts" element={<MyPosts />}/>
         </Route>
         <Route path="/new_post" element={<PostForm/>}/>
         <Route path="/categories" element={<CategoryList />} />

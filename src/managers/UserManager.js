@@ -29,3 +29,12 @@ export const toggleUserActivation = (user) => {
   })
     .then(normalize)
 }
+
+export const getUserById = (userId) => {
+  return fetch(`http://localhost:8000/users/${userId}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+  }).then(normalize)
+}

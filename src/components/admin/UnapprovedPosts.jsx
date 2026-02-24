@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { approvePost, getUnapprovedPosts } from "../../managers/PostManager.js"
+import { approvePost, deletePost, getUnapprovedPosts } from "../../managers/PostManager.js"
 
 export const UnapprovedPosts = () => {
     const [error, setError] = useState({error: false, message: ""})
@@ -27,13 +27,12 @@ export const UnapprovedPosts = () => {
             })
     }
 
-    //TODO: Implement either a delete post on denial, or add denied property to posts to
-    // let users edit their posts for approval. 
+    //TODO: Possible additional functionality: Add a deny reason and notify user of post denial/deletion and reasoning 
 
-    // Will remove the post form the local state, but will be reloaded when page reloads
     const handleDeny = (post) => {
         const postId = post.id
         setPosts(posts.filter(post => post.id !== postId))
+        deletePost(postId)
     }
 
     return (
