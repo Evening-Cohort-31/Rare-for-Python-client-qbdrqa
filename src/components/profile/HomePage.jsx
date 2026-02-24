@@ -25,18 +25,22 @@ export const HomePage = ({userId}) => {
 
     const panelTabs = [{label: "All", method: getApprovedPublishedPosts}, {label: "My Posts", method: getPostByUserId}, {label: "Subscriptions", method: getSubscribedPosts}]
 
+    //TODO: Add loading and error states/handling, add pagination, implement search functionality
     return (
         user && 
-        <article className="panel">
+        <div className="columns is-centered">
+        <article 
+            className="panel column is-two-thirds mt-5"
+        >
             <p className="panel-heading">{user.username}</p>
-            <div className="panel-block">
+            {/* <div className="panel-block">
                 <p className="control has-icons-left">
                     <input className="input" type="text" placeholder="Search" />
                     <span className="icon is-left">
                         <BiSearchAlt2 />
                     </span>
                 </p>
-            </div>
+            </div> */}
             <p className="panel-tabs">
                 {panelTabs.map((tab, i) => (
                     <button
@@ -54,6 +58,7 @@ export const HomePage = ({userId}) => {
                 </div>
             </div>
         </article>
+        </div>
         // <div className="columns is-centered">
         //     <div className="column is-half">
         //         <div className="box">
