@@ -1,2 +1,25 @@
 @import 'bulma/css/bulma.css';
 
+.comments-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #363636;
+}
+
+.comments-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.comments-scroll::-webkit-scrollbar-track {
+  background: #363636;
+}
+
+.comments-scroll::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.hide-overflow {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

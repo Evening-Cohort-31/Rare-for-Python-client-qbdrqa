@@ -3,17 +3,17 @@ import { Link, useParams } from "react-router-dom"
 import { getCommentsByPostId } from "../managers/CommentManager"
 import { getPostById } from "../managers/PostManager"
 
-export const PostComments = () => {
+export const PostComments = ({postId}) => {
   const { id } = useParams()
   const [comments, setComments] = useState([])
   const [post, setPost] = useState(null)
 
   useEffect(() => {
-    getPostById(id).then(({ status, response }) => {
+    getPostById(id || postId).then(({ status, response }) => {
       if (status >= 200 && status < 300) response.then(setPost)
     })
 
-    getCommentsByPostId(id).then(({ status, response }) => {
+    getCommentsByPostId(id || postId).then(({ status, response }) => {
       if (status >= 200 && status < 300) {
         response.then(setComments)
       } else {
@@ -21,7 +21,7 @@ export const PostComments = () => {
         setComments([])
       }
     })
-  }, [id])
+  }, [id, postId])
 
   return (
     <>
