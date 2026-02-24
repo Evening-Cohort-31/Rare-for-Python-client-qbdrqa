@@ -1,22 +1,29 @@
 import { useEffect, useState } from "react"
-import { getHomePage } from "../../managers/UserManager.js"
+import { getHomePage, getUserById } from "../../managers/UserManager.js"
 import { MyPosts } from "../posts/MyPosts.jsx"
 import { Post } from "../posts/Post.jsx"
 import { BiSearch, BiSearchAlt2 } from "react-icons/bi"
+import { getApprovedPublishedPosts, getPostByUserId, getSubscribedPosts } from "../../managers/PostManager.js"
 
 export const HomePage = ({userId}) => {
     const [user, setUser] = useState()
+    const [posts, setPosts] = useState([])
     const [currentPanelTab, setCurrentPanelTab] = useState(0)
 
     useEffect(() => {
-        getHomePage(userId).then(({status, response}) => {
+        getUserById(userId).then(({status, response}) => {
             if (status === 200) {
                 response.then(setUser)
             }
         })
-    }, [userId])
+        panelTabs[currentPanelTab].method(userId).then(({status, response}) => {
+            if (status === 200) {
+                response.then(setPosts)
+            }
+        })
+    }, [userId, currentPanelTab])
 
-    const panelTabs = ["All", "My Posts", "Subscriptions"]
+    const panelTabs = [{label: "All", method: getApprovedPublishedPosts}, {label: "My Posts", method: getPostByUserId}, {label: "Subscriptions", method: getSubscribedPosts}]
 
     return (
         user && 
@@ -36,11 +43,15 @@ export const HomePage = ({userId}) => {
                         key={i} 
                         className={`${currentPanelTab === i ? "is-active has-text-gray" : "has-text-link"}`}
                         onClick={() => {setCurrentPanelTab(i)}}
-                    >{tab}</button>
+                    >{tab.label}</button>
                 ))}
             </p>
-            <div className="panel-block">
-
+            <div className="panel-block columns is-centered">
+                <div className="column is-half">
+                    {posts.map(post => (
+                        <Post key={post.id} post={post} />
+                    ))}
+                </div>
             </div>
         </article>
         // <div className="columns is-centered">
