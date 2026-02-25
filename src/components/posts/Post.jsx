@@ -263,10 +263,11 @@ useEffect(() => {
                   </div>
                 </article>
               ))}
-
+            {comments.length > 3 && 
             <div className="has-text-right">
               <button className="button is-text" style={{marginLeft: "auto"}} onClick={() => {navigate(`/post/${post.id}/comments`)}}>View More</button>
             </div>
+            }
           </div>
           </div>
         </div>
