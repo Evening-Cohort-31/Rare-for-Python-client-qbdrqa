@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { getUserById } from "../../managers/UserManager.js"
+import { addSubscription, getUserById, removeSubscription } from "../../managers/UserManager.js"
 import { HumanDate } from "../utils/HumanDate.js"
 import { MyPosts } from "../posts/MyPosts.jsx"
 
@@ -9,6 +9,7 @@ export const Profile = () => {
     const {userId} = useParams()
 
     const navigate = useNavigate()
+    const token = localStorage.getItem("auth_token")
 
     useEffect(() => {
         getUserById(userId).then(({status, response}) => {
@@ -34,6 +35,39 @@ export const Profile = () => {
                     </div>
                     <div className="is-column is-half">
                         <h2 className="is-size-4" style={{margin:0}}>{user?.first_name + " " + user?.last_name}</h2>
+                        {user.id !== Number(token) ? 
+                            user.subscribers.find(s => s.id === Number(token)) 
+                            ? (
+                                <button 
+                                    className="button is-danger is-small" 
+                                    onClick={() => {
+                                        removeSubscription(token, userId).then(({status, response}) => {
+                                            if (status === 200) {
+                                                response.then(res => {
+                                                    if (res.deleted) {
+                                                        setUser({...user, subscribers: user.subscribers.filter(s => s.id !== Number(token))})
+                                                    }
+                                                })
+                                            }
+                                        })
+                                        
+                                    }}>Unsubscribe</button>
+                            )
+                            : (
+                            <button 
+                                className="button is-success is-small" 
+                                onClick={() => addSubscription(token, userId).then(({status, response}) => {
+                                    if (status === 201) {
+                                        response.then(res => {
+                                            setUser({...user, subscribers: [...user.subscribers, res]}) 
+                                        })
+                                        
+                                    }
+                                })}
+                            >Subscribe</button>
+                            )
+                            : <></>
+                        }
                         <div className="block ml-4">
                             <p>{`${user?.type}`}</p>
                             <p>{user.subscriber_count} Subscribers</p>
