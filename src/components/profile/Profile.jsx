@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { getUserById } from "../../managers/UserManager.js"
 import { HumanDate } from "../utils/HumanDate.js"
 import { MyPosts } from "../posts/MyPosts.jsx"
@@ -8,15 +8,21 @@ export const Profile = () => {
     const [user, setUser] = useState()
     const {userId} = useParams()
 
+    const navigate = useNavigate()
+
     useEffect(() => {
         getUserById(userId).then(({status, response}) => {
             if (status === 200) {
-                response.then(setUser)
-        }})
-    }, [userId])
+                response.then(res => {
+                    if (res?.active) setUser(res)
+                    else navigate("/")
+                    })
+            }
+    })
+    }, [userId, navigate])
 
     return (
-        user && 
+        user?.active ?
         <div className="container is-flex is-flex-direction-column is-justify-content-center">
             <div className="columns is-centered">
                 <div className="column is-half">
@@ -30,6 +36,7 @@ export const Profile = () => {
                         <h2 className="is-size-4" style={{margin:0}}>{user?.first_name + " " + user?.last_name}</h2>
                         <div className="block ml-4">
                             <p>{`${user?.type}`}</p>
+                            <p>{user.subscriber_count} Subscribers</p>
                             <p>{user?.email}</p>
                             <p>Member since <HumanDate date={user?.created_on}/></p>
                         </div>
@@ -40,5 +47,6 @@ export const Profile = () => {
                 <MyPosts />
             </div>
         </div>
+        : <>Loading</>
     )
 }
