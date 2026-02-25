@@ -117,3 +117,12 @@ export const deletePost = (id) => {
     }
   }).then(normalize)
 }
+
+export const getSubscribedPosts = (id) => {
+  return fetch(`${apiUrl}/posts/${id}?subscriptions=true`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+  }).then(normalize)
+}

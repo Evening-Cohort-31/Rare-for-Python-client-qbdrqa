@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { getCommentsByPostId } from "../managers/CommentManager"
 import { getPostById } from "../managers/PostManager"
 
@@ -7,6 +7,8 @@ export const PostComments = ({postId}) => {
   const { id } = useParams()
   const [comments, setComments] = useState([])
   const [post, setPost] = useState(null)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     getPostById(id || postId).then(({ status, response }) => {
@@ -34,7 +36,7 @@ export const PostComments = ({postId}) => {
 
       {/* Link back to post */}
       <div style={{ marginBottom: "1rem" }}>
-        <Link to={`/post/${id}`}>Back to Post</Link>
+        <button className="has-text-link" onClick={() => navigate(-1)}>Back to Post</button>
         {"  |  "}
         <Link to={`/post/${id}/comments/new`}>Add Comment</Link>
       </div>
