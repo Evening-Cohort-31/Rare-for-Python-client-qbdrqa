@@ -116,7 +116,6 @@ export const PostForm = ({edit = false}) => {
         (edit && postDetails.user_id === userId ? editPost(postDetails) : createPost(postDetails)).then(async res => {
             setLoading(false)
             if (res.status >= 200 && res.status < 300) {
-                //TODO: Create Posts route/postDetails
                 const response = await res.response
                 navigate(`/post/${response.id}`, {state: response})
             } else if (res.status >=400 && res.status < 500) {

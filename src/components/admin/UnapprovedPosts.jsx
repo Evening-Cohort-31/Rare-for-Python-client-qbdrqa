@@ -8,19 +8,24 @@ export const UnapprovedPosts = () => {
 
     useEffect(() => {
         //Get unapproved posts.then setPosts(unapproved)
-        getUnapprovedPosts().then(res => res.json().then(res => setPosts(res)))
+        getUnapprovedPosts().then(({status, response}) => 
+            {if (status === 200) {
+                response.then(setPosts)
+            }})
     }, [])
 
     const handleApprove = (post) => {
         const postId = post.id
         setLoading(true)
         approvePost(postId)
-            .then(() => getUnapprovedPosts())
-            .then(res => res.json())
-            .then(res => {
-                setPosts(res)
+            .then(({status, response}) => 
+            {
                 setLoading(false)
-            })
+                if (status === 200) {    
+                    response.then(res => {
+                        setPosts(posts.filter(p => p.id !== res.id))
+                    })}}        
+        )
             .catch(err => {
                 setError({error: true, message: "Failed to approve post"})
                 setLoading(false)

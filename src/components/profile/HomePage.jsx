@@ -47,7 +47,7 @@ export const HomePage = ({userId}) => {
         return filteredPosts
     }
 
-    //TODO: Add loading and error states/handling, add pagination, implement search functionality
+    //TODO: Add error states/handling, add pagination
     return (
         user && 
         <div className="columns is-centered">

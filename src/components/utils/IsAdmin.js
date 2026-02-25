@@ -6,7 +6,7 @@ export const IsAdmin = async (userId) => {
         },
     }).then(async res => {
         const response = await res.json()        
-        return response.type === "Admin"
+        return response.type === "admin"
     })
 
     return isAdmin
