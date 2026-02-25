@@ -13,15 +13,23 @@ export const HomePage = ({userId}) => {
     const [currentPanelTab, setCurrentPanelTab] = useState(0)
     const [currentMenuTab, setCurrentMenuTab] = useState(0)
     const [searchTerm, setSearchTerm] = useState("")
+    const [loading, setLoading] = useState(false)
 
 
     useEffect(() => {
+        setLoading(true)
         getUserById(userId).then(({status, response}) => {
+            setLoading(false)
             if (status === 200) {
                 response.then(setUser)
             }
         })
+    }, [userId])
+
+    useEffect(() => {
+        setLoading(true)
         panelTabs[currentPanelTab].method(userId).then(({status, response}) => {
+            setLoading(false)
             if (status === 200) {
                 response.then((res) => {
                     setPosts(res)
@@ -29,7 +37,7 @@ export const HomePage = ({userId}) => {
             })
             }
         })
-    }, [userId, currentPanelTab])
+    }, [currentPanelTab, userId])
 
     const filterPosts = (subscriptionId) => {
         let filteredPosts = posts
@@ -51,7 +59,7 @@ export const HomePage = ({userId}) => {
                 {panelTabs.map((tab, i) => (
                     <button
                         key={i} 
-                        className={`${currentPanelTab === i ? "is-active has-text-gray" : "has-text-link"}`}
+                        className={`${currentPanelTab === i ? "is-active has-text-gray" : "has-text-info"}`}
                         onClick={() => {setCurrentPanelTab(i)}}
                     >{tab.label}</button>
                 ))}
@@ -94,8 +102,10 @@ export const HomePage = ({userId}) => {
                                         <button
                                             className={`${i + 1 === currentMenuTab ? "is-active" : ""}`} 
                                             onClick={() => {
+                                                setLoading(true)
                                                 setCurrentMenuTab(i + 1)
                                                 setDisplayedPosts(filterPosts(sub.id))
+                                                setLoading(false)
                                             }}
                                         >
                                             {sub.username}
@@ -108,9 +118,11 @@ export const HomePage = ({userId}) => {
                     </aside>
                 </div>
                 <div className="column">
-                    {displayedPosts.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase())).map(post => (
+                    {!loading ? displayedPosts.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase())).map(post => (
                         <Post key={post.id} post={post} />
-                    ))}
+                    )) : (Array.from({ length: 5 }).map((_, i)=> (
+                        <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
+                    )))}
                 </div>
             </div>
         </article>
