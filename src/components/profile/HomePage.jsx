@@ -119,7 +119,7 @@ export const HomePage = ({userId}) => {
                 </div>
                 <div className="column">
                     {!loading ? displayedPosts.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase())).map(post => (
-                        <Post key={post.id} post={post} />
+                        <Post key={post.id} post={post} edit={post.user.id === Number(userId)} />
                     )) : (Array.from({ length: 5 }).map((_, i)=> (
                         <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
                     )))}
