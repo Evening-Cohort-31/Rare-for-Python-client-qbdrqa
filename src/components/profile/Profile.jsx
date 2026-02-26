@@ -3,49 +3,55 @@ import { useNavigate, useParams } from "react-router-dom"
 import { addSubscription, getUserById, removeSubscription } from "../../managers/UserManager.js"
 import { HumanDate } from "../utils/HumanDate.js"
 import { MyPosts } from "../posts/MyPosts.jsx"
+import { ProfileImage } from "../utils/ProfileImage.jsx"
 
 export const Profile = () => {
     const [user, setUser] = useState()
     const {userId} = useParams()
+    const [loading, setLoading] = useState(true)
 
     const navigate = useNavigate()
     const token = localStorage.getItem("auth_token")
 
     useEffect(() => {
+        setLoading(true)
         getUserById(userId).then(({status, response}) => {
+            setLoading(false)
             if (status === 200) {
                 response.then(res => {
                     if (res?.active) setUser(res)
                     else navigate("/")
-                    })
-            }
+                })
+        }
     })
     }, [userId, navigate])
 
     return (
-        user?.active ?
-        <div className="container is-flex is-flex-direction-column is-justify-content-center">
+        <div className="container is-flex is-flex-direction-column" style={{ minHeight: "90vh" }}>
+            {!loading ? user && 
             <div className="columns is-centered">
-                <div className="column is-half">
-                    <div className="is-flex is-align-items-center">
-                        <h1 className={`title`} style={{margin: 0}}>{user?.username}'s Profile</h1>
-                        <figure className="image is-48x48 ml-5">
-                            <img alt="profile" className="is-rounded" src={user?.profile_image_url || "data:image/png;base64,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"}/>
-                        </figure>
-                    </div>
-                    <div className="is-column is-half">
-                        <h2 className="is-size-4" style={{margin:0}}>{user?.first_name + " " + user?.last_name}</h2>
+                <div className="column is-narrow">
+                    <figure className={`image is-96x96 mr-5`}>
+                        <ProfileImage src={user.profile_image_url || ""}/>
+                    </figure>
+                </div>
+                <div className="column">
+                    <div className={`is-flex`} style={{alignItems: "center"}}>
+                        <h1 className={`title mb-1`}>{user?.username}</h1>
+                        <p className="ml-2 is-capitalized">{`${user?.type}`}</p>
                         {user.id !== Number(token) ? 
                             user.subscribers.find(s => s.id === Number(token)) 
                             ? (
                                 <button 
-                                    className="button is-danger is-small" 
-                                    onClick={() => {
+                                    className="button is-danger is-small ml-2 is-rounded" 
+                                    onClick={(e) => {
+                                        e.target.classList.add("is-loading")
                                         removeSubscription(token, userId).then(({status, response}) => {
                                             if (status === 200) {
                                                 response.then(res => {
                                                     if (res.deleted) {
                                                         setUser({...user, subscribers: user.subscribers.filter(s => s.id !== Number(token))})
+                                                            e.target.classList.remove("is-loading")
                                                     }
                                                 })
                                             }
@@ -55,7 +61,7 @@ export const Profile = () => {
                             )
                             : (
                             <button 
-                                className="button is-success is-small" 
+                                className="button is-success is-small ml-2 is-rounded" 
                                 onClick={() => addSubscription(token, userId).then(({status, response}) => {
                                     if (status === 201) {
                                         response.then(res => {
@@ -68,19 +74,25 @@ export const Profile = () => {
                             )
                             : <></>
                         }
-                        <div className="block ml-4">
-                            <p>{`${user?.type}`}</p>
-                            <p>{user.subscriber_count} Subscribers</p>
-                            <p>{user?.email}</p>
-                            <p>Member since <HumanDate date={user?.created_on}/></p>
+
+                    </div>
+                    <div className="is-column is-half">
+                        <strong>{user?.email}</strong><span className="ml-2">• {user.subscriber_count} Subscribers</span><span className="ml-2">• Member since <HumanDate date={user?.created_on}/></span>
+                        <div className="block">
+                            {user.first_name + " " + user.last_name + ": "}
+                            {user.bio}
                         </div>
                     </div>
                 </div>
+            </div> 
+            : 
+            <div className="skeleton-block" style={{height: 120}}>
             </div>
-            <div className="box px-0">
+            }
+            <div className="box px-0 comments-scroll" style={{overflowY: "auto", height: "75vh", overflowX: "hidden", flexGrow: 1, minHeight: 0}}>
                 <MyPosts />
             </div>
         </div>
-        : <>Loading</>
+
     )
 }

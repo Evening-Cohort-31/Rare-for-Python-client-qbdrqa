@@ -116,7 +116,6 @@ export const PostForm = ({edit = false}) => {
         (edit && postDetails.user_id === userId ? editPost(postDetails) : createPost(postDetails)).then(async res => {
             setLoading(false)
             if (res.status >= 200 && res.status < 300) {
-                //TODO: Create Posts route/postDetails
                 const response = await res.response
                 navigate(`/post/${response.id}`, {state: response})
             } else if (res.status >=400 && res.status < 500) {
@@ -181,7 +180,7 @@ export const PostForm = ({edit = false}) => {
                 <div className="field">
                     <label className="label">Category*</label>
                     <div className="control">
-                        <div className="select">
+                        <div className={`select ${loading ? "is-loading" : ""}`}>
                             <select 
                                 value={formData.category_id}
                                 onChange={(e) => setFormData({...formData, category_id: e.target.value})}
@@ -199,7 +198,7 @@ export const PostForm = ({edit = false}) => {
                 <div className="field">
                     <label className="label">Tags</label>
                     <div className="control">
-                        <div className="select is-multiple">
+                        <div className={`select is-multiple comments-scroll ${loading ? "is-loading" : ""}`}>
                             <select
                                 multiple
                                 value={formData.tags}
