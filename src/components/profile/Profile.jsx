@@ -27,26 +27,28 @@ export const Profile = () => {
         user?.active ?
         <div className="container is-flex is-flex-direction-column is-justify-content-center">
             <div className="columns is-centered">
-                <div className="column is-half">
-                    <div className="is-flex is-align-items-center">
-                        <h1 className={`title`} style={{margin: 0}}>{user?.username}'s Profile</h1>
-                        <figure className="image is-48x48 ml-5">
-                            <ProfileImage src={user.profile_image_url}/>
-                        </figure>
-                    </div>
-                    <div className="is-column is-half">
-                        <h2 className="is-size-4" style={{margin:0}}>{user?.first_name + " " + user?.last_name}</h2>
+                <div className="column is-narrow">
+                    <figure className="image is-96x96 mr-5">
+                        <ProfileImage src={user.profile_image_url}/>
+                    </figure>
+                </div>
+                <div className="column">
+                    <div className="is-flex" style={{alignItems: "center"}}>
+                        <h1 className={`title mb-1`} style={{}}>{user?.username}</h1>
+                        <p className="ml-2 is-capitalized">{`${user?.type}`}</p>
                         {user.id !== Number(token) ? 
                             user.subscribers.find(s => s.id === Number(token)) 
                             ? (
                                 <button 
-                                    className="button is-danger is-small" 
-                                    onClick={() => {
+                                    className="button is-danger is-small ml-2 is-rounded" 
+                                    onClick={(e) => {
+                                        e.target.classList.add("is-loading")
                                         removeSubscription(token, userId).then(({status, response}) => {
                                             if (status === 200) {
                                                 response.then(res => {
                                                     if (res.deleted) {
                                                         setUser({...user, subscribers: user.subscribers.filter(s => s.id !== Number(token))})
+                                                            e.target.classList.remove("is-loading")
                                                     }
                                                 })
                                             }
@@ -56,7 +58,7 @@ export const Profile = () => {
                             )
                             : (
                             <button 
-                                className="button is-success is-small" 
+                                className="button is-success is-small ml-2 is-rounded" 
                                 onClick={() => addSubscription(token, userId).then(({status, response}) => {
                                     if (status === 201) {
                                         response.then(res => {
@@ -69,11 +71,13 @@ export const Profile = () => {
                             )
                             : <></>
                         }
-                        <div className="block ml-4">
-                            <p>{`${user?.type}`}</p>
-                            <p>{user.subscriber_count} Subscribers</p>
-                            <p>{user?.email}</p>
-                            <p>Member since <HumanDate date={user?.created_on}/></p>
+
+                    </div>
+                    <div className="is-column is-half">
+                        <strong>{user?.email}</strong><span className="ml-2">• {user.subscriber_count} Subscribers</span><span className="ml-2">• Member since <HumanDate date={user?.created_on}/></span>
+                        <div className="block">
+                            {user.first_name + " " + user.last_name + ": "}
+                            {user.bio}
                         </div>
                     </div>
                 </div>
