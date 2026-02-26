@@ -14,19 +14,21 @@ export const Profile = () => {
     const token = localStorage.getItem("auth_token")
 
     useEffect(() => {
+        setLoading(true)
         getUserById(userId).then(({status, response}) => {
+            setLoading(false)
             if (status === 200) {
                 response.then(res => {
                     if (res?.active) setUser(res)
                     else navigate("/")
-                    })
-            }
+                })
+        }
     })
     }, [userId, navigate])
 
     return (
-        user?.active ?
         <div className="container is-flex is-flex-direction-column is-justify-content-center">
+            {!loading ? user && 
             <div className="columns is-centered">
                 <div className="column is-narrow">
                     <figure className={`image is-96x96 mr-5`}>
@@ -34,8 +36,8 @@ export const Profile = () => {
                     </figure>
                 </div>
                 <div className="column">
-                    <div className="is-flex" style={{alignItems: "center"}}>
-                        <h1 className={`title mb-1`} style={{}}>{user?.username}</h1>
+                    <div className={`is-flex`} style={{alignItems: "center"}}>
+                        <h1 className={`title mb-1`}>{user?.username}</h1>
                         <p className="ml-2 is-capitalized">{`${user?.type}`}</p>
                         {user.id !== Number(token) ? 
                             user.subscribers.find(s => s.id === Number(token)) 
@@ -82,11 +84,15 @@ export const Profile = () => {
                         </div>
                     </div>
                 </div>
+            </div> 
+            : 
+            <div className="skeleton-block" style={{height: 120}}>
             </div>
+            }
             <div className="box px-0">
                 <MyPosts />
             </div>
         </div>
-        : <></>
+
     )
 }
