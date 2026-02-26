@@ -180,7 +180,7 @@ export const PostForm = ({edit = false}) => {
                 <div className="field">
                     <label className="label">Category*</label>
                     <div className="control">
-                        <div className="select">
+                        <div className={`select ${loading ? "is-loading" : ""}`}>
                             <select 
                                 value={formData.category_id}
                                 onChange={(e) => setFormData({...formData, category_id: e.target.value})}
@@ -198,7 +198,7 @@ export const PostForm = ({edit = false}) => {
                 <div className="field">
                     <label className="label">Tags</label>
                     <div className="control">
-                        <div className="select is-multiple">
+                        <div className={`select is-multiple comments-scroll ${loading ? "is-loading" : ""}`}>
                             <select
                                 multiple
                                 value={formData.tags}

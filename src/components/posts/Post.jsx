@@ -6,8 +6,9 @@ import { getAllTags } from "../../managers/TagManager.js"
 import { editPost, deletePost } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
 import { BiUpArrow } from "react-icons/bi"
+import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
 
-export const Post = ({ post, edit = false, detail = false }) => {
+export const Post = ({ post, edit = false, detail = false, approval=null }) => {
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [tagLimit, setTagLimit] = useState(10)
@@ -145,14 +146,7 @@ useEffect(() => {
       {detail && (
         <div className="card-image">
           <figure className="image is-16by9">
-            <img
-              src={
-                post?.image_url
-                  ? post.image_url
-                  : "https://cdn11.bigcommerce.com/s-3uewkq06zr/images/stencil/1280x1280/products/230/406/blue_b__05623.1492487362.png?c=2"
-              }
-              alt="post header"
-            />
+            <PostHeaderImage src={post.image_url}/>
           </figure>
         </div>
       )}
@@ -279,6 +273,13 @@ useEffect(() => {
             <CommentForm onCommentAdded={handleComments} postId={post.id} />
         </div>
       </div>
+      {approval 
+      ?
+      <footer className="card-footer">
+          <button className="card-footer-item button is-success" onClick={() => approval.handleApprove(post)}>Approve</button>
+          <button className="card-footer-item button is-danger" onClick={() => approval.handleDeny(post)}>Deny</button>
+      </footer> 
+      :
       <div className="card-footer">
         <button className="card-footer-item has-text-success" onClick={() => setAddingComment(true)}>Add Comment</button>
         <button 
@@ -289,7 +290,7 @@ useEffect(() => {
         >
           {!viewingComments ? "View Comments" : "Hide Comments"}
         </button>
-      </div>
+      </div>}
     </div>
   )
 }

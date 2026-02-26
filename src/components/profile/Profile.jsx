@@ -27,7 +27,7 @@ export const Profile = () => {
     }, [userId, navigate])
 
     return (
-        <div className="container is-flex is-flex-direction-column is-justify-content-center">
+        <div className="container is-flex is-flex-direction-column" style={{ minHeight: "90vh" }}>
             {!loading ? user && 
             <div className="columns is-centered">
                 <div className="column is-narrow">
@@ -89,7 +89,7 @@ export const Profile = () => {
             <div className="skeleton-block" style={{height: 120}}>
             </div>
             }
-            <div className="box px-0">
+            <div className="box px-0 comments-scroll" style={{overflowY: "auto", height: "75vh", overflowX: "hidden", flexGrow: 1, minHeight: 0}}>
                 <MyPosts />
             </div>
         </div>

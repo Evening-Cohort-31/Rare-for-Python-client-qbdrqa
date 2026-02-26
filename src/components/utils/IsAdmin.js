@@ -5,7 +5,7 @@ export const IsAdmin = async (userId) => {
             "Accept": "application/json"
         },
     }).then(async res => {
-        const response = await res.json()        
+        const response = await res.json()     
         return response.type === "admin"
     })
 

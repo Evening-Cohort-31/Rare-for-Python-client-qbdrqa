@@ -49,12 +49,11 @@ export const HomePage = ({userId}) => {
 
     //TODO: Add error states/handling, add pagination
     return (
-        user && 
         <div className="columns is-centered">
         <article 
             className="panel column is-two-thirds mt-5 is-primary"
         >
-            <p className="panel-heading">{user.username}</p>
+            <p className={`panel-heading`}>{user ? user.username : <p className="title has-skeleton">""</p>}</p>
             <p className="panel-tabs">
                 {panelTabs.map((tab, i) => (
                     <button
@@ -97,7 +96,7 @@ export const HomePage = ({userId}) => {
                                         >All
                                     </button>
                                 </li>
-                                {user.subscriptions.map((sub, i) => (
+                                {user?.subscriptions.map((sub, i) => (
                                     <li key={sub.id}>
                                         <button
                                             className={`${i + 1 === currentMenuTab ? "is-active" : ""}`} 
