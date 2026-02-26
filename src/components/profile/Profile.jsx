@@ -8,6 +8,7 @@ import { ProfileImage } from "../utils/ProfileImage.jsx"
 export const Profile = () => {
     const [user, setUser] = useState()
     const {userId} = useParams()
+    const [loading, setLoading] = useState(true)
 
     const navigate = useNavigate()
     const token = localStorage.getItem("auth_token")
@@ -28,8 +29,8 @@ export const Profile = () => {
         <div className="container is-flex is-flex-direction-column is-justify-content-center">
             <div className="columns is-centered">
                 <div className="column is-narrow">
-                    <figure className="image is-96x96 mr-5">
-                        <ProfileImage src={user.profile_image_url}/>
+                    <figure className={`image is-96x96 mr-5`}>
+                        <ProfileImage src={user.profile_image_url || ""}/>
                     </figure>
                 </div>
                 <div className="column">
@@ -86,6 +87,6 @@ export const Profile = () => {
                 <MyPosts />
             </div>
         </div>
-        : <>Loading</>
+        : <></>
     )
 }
