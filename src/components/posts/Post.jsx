@@ -281,12 +281,11 @@ useEffect(() => {
       </footer> 
       :
       <div className="card-footer">
-        <button className="card-footer-item has-text-success" onClick={() => setAddingComment(true)}>Add Comment</button>
+        <button className="card-footer-item button has-text-success" onClick={() => setAddingComment(true)} disabled={post.approved === 0}>Add Comment</button>
         <button 
-          className={`card-footer-item ${comments.length > 0 ? 'has-text-info' : 'has-text-gray'}`} 
+          className={`card-footer-item button ${comments.length > 0 ? 'has-text-info' : 'has-text-gray'}`} 
           onClick={() => comments.length > 0 && setViewingComments(!viewingComments)} 
           disabled={comments.length === 0}
-          style={{cursor: comments.length === 0 ? 'not-allowed' : 'pointer', opacity: comments.length === 0 ? 0.5 : 1}}
         >
           {!viewingComments ? "View Comments" : "Hide Comments"}
         </button>
