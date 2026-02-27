@@ -4,6 +4,7 @@ import { createPost, editPost, getPostById } from "../../managers/PostManager.js
 import { getAllTags } from "../../managers/TagManager.js";
 import { IsAdmin } from "../utils/IsAdmin.js";
 import { getCategories } from "../../managers/CategoryManager.js";
+import { DragDrop } from "../utils/DragDrop.jsx";
 
 // A form for letting users create or edit a post
 export const PostForm = ({edit = false}) => {
@@ -11,12 +12,13 @@ export const PostForm = ({edit = false}) => {
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([])
     const [error, setError] = useState({error: false, message:""});
+    const [postHeaderImage, setPostHeaderImage] = useState(null)
     const [formData, setFormData] = useState({
         title: "",
         content: "",
         category_id: "",
         tags: [],
-        image_url: ""
+        image: postHeaderImage
     })
     
     const navigate = useNavigate()
@@ -83,7 +85,7 @@ export const PostForm = ({edit = false}) => {
                         title: post.title,
                         content: post.content,
                         category_id: post.category.id,
-                        image_url: post.image_url || "",
+                        image: "",
                         tags: post.tags?.map(tag => String(tag.id)) || []
                     });
                 } else {
@@ -106,7 +108,7 @@ export const PostForm = ({edit = false}) => {
             user_id: Number(localStorage.getItem("auth_token")),
             category_id: Number(formData.category_id),
             title: formData.title,
-            image_url: formData.image_url,
+            image: postHeaderImage,
             content: formData.content,
             tags: formData.tags,
             approved: await IsAdmin(userId),
@@ -222,12 +224,7 @@ export const PostForm = ({edit = false}) => {
                 <div className="field">
                     <label className="label">Post Header Image</label>
                     <div className="control">
-                        <input 
-                            className="input" 
-                            type="url" 
-                            value={formData.image_url}
-                            onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                        />
+                        <DragDrop setImage={setPostHeaderImage}/>
                     </div>
                 </div>
 

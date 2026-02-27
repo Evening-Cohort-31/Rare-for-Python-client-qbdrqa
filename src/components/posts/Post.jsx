@@ -146,7 +146,7 @@ useEffect(() => {
       {detail && (
         <div className="card-image">
           <figure className="image is-16by9">
-            <PostHeaderImage src={post.image_url}/>
+            <PostHeaderImage src={`http://localhost:8000/posts?image=${post.id}`}/>
           </figure>
         </div>
       )}

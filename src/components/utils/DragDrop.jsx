@@ -3,11 +3,11 @@ import { FileUploader } from "react-drag-drop-files"
 
 const fileTypes = ["JPG", "JPEG", "PNG"]
 
-export const DragDrop = ({setProfileImage}) => {
+export const DragDrop = ({setImage}) => {
     const [file, setFile] = useState(null)
     const handleChange = (file) => {
         setFile(file)
-        setProfileImage(file)
+        setImage(file)
     }
 
     return (
