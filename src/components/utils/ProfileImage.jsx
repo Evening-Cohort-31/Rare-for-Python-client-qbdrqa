@@ -31,8 +31,10 @@ export const ProfileImage = ({src}) => {
                 />
             )}
         <img
+            className="is-rounded"
             src={src}
             alt="profile"
+            style={{ objectFit: 'cover', width: "100%", height: "100%"}}
             onLoad={handleLoad}
             onError={handleError}
         />

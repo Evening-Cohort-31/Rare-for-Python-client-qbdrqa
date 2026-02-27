@@ -32,7 +32,7 @@ export const Profile = () => {
             <div className="columns is-centered">
                 <div className="column is-narrow">
                     <figure className={`image is-96x96 mr-5`}>
-                        <ProfileImage src={user.profile_image_url || ""}/>
+                        <ProfileImage src={`http://localhost:8000/users?image=${user.id}`}/>
                     </figure>
                 </div>
                 <div className="column">
