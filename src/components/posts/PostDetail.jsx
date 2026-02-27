@@ -21,7 +21,7 @@ export const PostDetail = () => {
     <>
       <h1>{post.title}</h1>
 
-      <PostHeaderImage src={`http://localhost:8000/posts?image=${post.id}`} />
+      <PostHeaderImage src={`http://localhost:8000/posts?image=${post.id}&v=${post.updated_at}`} />
 
       <div><strong>By:</strong> {post.author_display_name}</div>
 

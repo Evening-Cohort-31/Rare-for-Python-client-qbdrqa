@@ -59,7 +59,7 @@ export const editPost = (post) => {
   formData.append("user_id", post.user_id)
   formData.append("category_id", post.category_id)
   formData.append("title", post.title)
-  if (post.image) formData.append("image", post.image)
+  if (post.image !== null) formData.append("image", post.image)
   formData.append("content", post.content)
   formData.append("tags", post.tags)
   formData.append("approved", post.approved)

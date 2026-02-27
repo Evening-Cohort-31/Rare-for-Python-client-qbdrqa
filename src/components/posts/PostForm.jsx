@@ -18,7 +18,7 @@ export const PostForm = ({edit = false}) => {
         content: "",
         category_id: "",
         tags: [],
-        image: postHeaderImage
+        image: null
     })
     
     const navigate = useNavigate()
@@ -85,7 +85,7 @@ export const PostForm = ({edit = false}) => {
                         title: post.title,
                         content: post.content,
                         category_id: post.category.id,
-                        image: "",
+                        image: postHeaderImage,
                         tags: post.tags?.map(tag => String(tag.id)) || []
                     });
                 } else {
@@ -96,7 +96,7 @@ export const PostForm = ({edit = false}) => {
                 setError({error: true, message: "Failed to load post data"});
             });
         }
-    }, [edit, postId, navigate, userId]);
+    }, [edit, postId, navigate, userId, postHeaderImage]);
 
     // Updates existing post or creates new one
     const handleSubmitPost = async (e) => {
