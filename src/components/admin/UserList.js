@@ -29,10 +29,10 @@ export const UserList = () => {
           setUsers(data);
           setDisplayedUsers(data);
         } else {
-          setError("Invalid response from server");
+          setError({error: true, msg: "Invalid response from server"});
         }
       })
-      .catch((err) => setError(err.message));
+      .catch((err) => setError({error: true, msg: err.message}));
   }, []);
 
   useEffect(() => {
@@ -55,6 +55,9 @@ export const UserList = () => {
         setUsers((prevUsers) =>
           prevUsers.map((u) => (u.id === user.id ? response : u)),
         );
+      } else if (res.status === 409) {
+        const r = await res.response
+        setError({error: true, msg: r.error })
       }
     });
     setUser(null);
@@ -103,15 +106,15 @@ export const UserList = () => {
         </div>
       )}
       <h1 className="title is-3 my-4">All User Profiles</h1>
-      {error && <div className="notification is-danger">{error}</div>}
+      {error && <div className="notification is-danger">{error.msg}</div>}
       <table className="table is-fullwidth is-striped">
         <thead>
           <tr>
             <th style={{ width: "20%" }}>Username</th>
             <th style={{ width: "25%" }}>Full Name</th>
             <th style={{ width: "30%" }}>Email</th>
-            <th style={{ width: "10%" }}>Type</th>
-            <th style={{ width: "15%" }}>
+            <th style={{ width: "15%" }}>Type</th>
+            <th style={{ width: "10%" }}>
               <div
                 className={`dropdown ${activeFilter.active ? "is-active" : ""}`}
                 tabIndex={0}
@@ -198,7 +201,12 @@ export const UserList = () => {
                   {user.first_name} {user.last_name}
                 </td>
                 <td>{user.email}</td>
-                <td>{user.is_staff ? "Admin" : "Author"}</td>
+                <td>
+                    <div className="tags has-addons">
+                      <span class={`tag ${user.is_staff ? "is-white" : "is-info"}`}>{user.is_staff ? "Admin" : "Author"}</span>
+                      <button className={`tag button ${user.is_staff ? "is-danger" : "is-success"}`} disabled = {!user.active}>{user.is_staff ? "Demote" : "Promote"}</button>
+                    </div>
+                </td>
                 <td>
                     <button
                       className={`button is-small ${user.active ? 'is-warning' : "is-success"}`}
