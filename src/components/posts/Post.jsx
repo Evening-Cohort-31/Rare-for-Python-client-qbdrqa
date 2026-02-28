@@ -27,18 +27,6 @@ export const Post = ({ post, edit = false, detail = false, approval=null }) => {
     setPostTags(safePostTags)
   }, [safePostTags])
 
-  // useEffect(() => {
-  //   if (viewingComments) {
-  //     setLoadingComments(true)
-  //     getCommentsByPostId(post.id).then(({status, response}) => {
-  //       if (status >= 200 && status < 300) {
-  //         response.then(setComments)
-  //       }
-  //     })
-  //   }
-  //   setLoadingComments(false)
-  // },[post, viewingComments])
-
   useEffect(() => {
     setComments(post.comments)
   },[post])
@@ -250,7 +238,7 @@ useEffect(() => {
                       <h3 className="hide-overflow">{comment.subject}</h3>
                       <button className="ml-3 has-text-link" onClick={() => {
                         navigate(`/users/${comment.author.id}`)
-                      }}>{comment.author.username}</button>
+                      }}>{comment.author.username || comment.username}</button>
                     </div>
                     <div className="column is-one-third">                  
                       <HumanDate date={comment.created_on}/>
