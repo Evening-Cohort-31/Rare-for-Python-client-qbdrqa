@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getApprovedPublishedPosts, getPostByTag, searchPostsByTitle } from "../../managers/PostManager.js"
+import { getApprovedPublishedPosts, getPostByTag, getPostsByCategory, searchPostsByTitle } from "../../managers/PostManager.js"
 import { Post } from "./Post.jsx"
 import { useLocation, useParams, useSearchParams } from "react-router-dom"
 
@@ -11,6 +11,7 @@ export const PostsList = () => {
   const location = useLocation()
 
   const isTagRoute = !!params.tagId
+  const isCategoryRoute = !!params.category
 
   useEffect(() => {
     setLoading(true)
@@ -33,6 +34,13 @@ export const PostsList = () => {
           response.then(setPosts)
         }
       })
+    } else if (isCategoryRoute) {
+      getPostsByCategory(params.category).then(({status, response}) => {
+        setLoading(false)
+        if (status >= 200 && status < 300) {
+          response.then(setPosts)
+        }
+      })
     } else {
     getApprovedPublishedPosts().then(({ status, response }) => {
       setLoading(false)
@@ -44,16 +52,19 @@ export const PostsList = () => {
       }
     })
     }
-  }, [params, isTagRoute, location, searchParams])
+  }, [params, isTagRoute, isCategoryRoute, location, searchParams])
 
   return (
     <div className="columns is-centered">
       <div className="column is-one-third">
       <h1 className="title">Posts</h1>
       {!loading ? 
-        posts.map(post => (
-          <Post post={post} key={post.id}/>
-        )) :
+        posts.length ? 
+          posts.map(post => (
+            <Post post={post} key={post.id}/>
+          )) :
+          <p>No posts found</p> 
+        :
         Array.from({ length: 5 }).map((_, i) => (
           <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
         ))}

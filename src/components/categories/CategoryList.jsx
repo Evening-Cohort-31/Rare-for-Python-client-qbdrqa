@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
 import { getCategories, createCategory } from "../../managers/CategoryManager.js"
+import { useNavigate } from "react-router-dom"
 
 export const CategoryList = () => {
     const [categories, setCategories] = useState([])
     const [newCategoryLabel, setNewCategoryLabel] = useState("")
     const [error, setError] = useState({error: false, message: ""})
     const [loading, setLoading] = useState(false)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         setLoading(true)
@@ -31,13 +34,15 @@ export const CategoryList = () => {
         setLoading(true)
         e.preventDefault()
 
-        if (categories.find( c => String(c.label).toLowerCase() === newCategoryLabel.toLowerCase())) {
+        const formatCategory = newCategoryLabel.replaceAll("_", "-")
+
+        if (categories.find( c => String(c.label).toLowerCase() === formatCategory.toLowerCase())) {
             setLoading(false)
             setError({error: true, message: "This category already exists"})
             return
         }
 
-        createCategory({"label": newCategoryLabel}).then(async res => {
+        createCategory({"label": formatCategory}).then(async res => {
             setLoading(false)
             setNewCategoryLabel("")
             const status = res.status
@@ -68,7 +73,12 @@ export const CategoryList = () => {
                         ))
                     ) : categories.length > 0 ? categories.map(category => (
                         <div className="card" key={category.id} style={{ marginTop: "10px", minHeight: 50}}>
-                            <header className="card-header">
+                            <header 
+                                className="card-header button"
+                                onClick={() => {
+                                    navigate(category.label.toLowerCase().split(" ").join("_"))
+                                }}    
+                            >
                                 <p className={`card-header-title ${loading ? 'is-skeleton': ""}`}>{category.label}</p>
                             </header>
                         </div>
