@@ -52,16 +52,19 @@ export const PostsList = () => {
       }
     })
     }
-  }, [params, isTagRoute, location, searchParams])
+  }, [params, isTagRoute, isCategoryRoute, location, searchParams])
 
   return (
     <div className="columns is-centered">
       <div className="column is-one-third">
       <h1 className="title">Posts</h1>
       {!loading ? 
-        posts.map(post => (
-          <Post post={post} key={post.id}/>
-        )) :
+        posts.length ? 
+          posts.map(post => (
+            <Post post={post} key={post.id}/>
+          )) :
+          <p>No posts found</p> 
+        :
         Array.from({ length: 5 }).map((_, i) => (
           <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
         ))}
