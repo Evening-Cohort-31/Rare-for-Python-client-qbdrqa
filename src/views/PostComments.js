@@ -61,7 +61,7 @@ export const PostComments = () => {
       {post && <h2 style={{ marginTop: "0.5rem" }}>{post.title}</h2>}
 
       <div style={{ marginBottom: "1rem" }}>
-        <Link to={`/post/${postId}`}>Back to Post</Link>
+        <button className="has-text-link" onClick={() => navigate(-1)}>Back to Post</button>
         {"  |  "}
         <Link to={`/post/${postId}/comments/new`}>Add Comment</Link>
       </div>
@@ -80,7 +80,7 @@ export const PostComments = () => {
           <div style={{ marginTop: ".5rem" }}>{c.content}</div>
 
           <div style={{ marginTop: ".5rem", opacity: ".85" }}>
-            By {c.author?.username ?? c.author ?? "Unknown"}
+            By {c.author?.username ?? c.author_display_name ?? "Unknown"}
           </div>
 
           <div style={{ marginTop: ".75rem", display: "flex", gap: ".75rem" }}>

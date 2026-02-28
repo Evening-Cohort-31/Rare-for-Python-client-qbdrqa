@@ -11,7 +11,7 @@ export const Admin = ({ token }) => {
 
   // Still loading
   if (isAdmin === null) {
-    return <div>Loading...</div>;
+    return <>Verifying Admin Status</>;
   }
 
   // Admin check complete

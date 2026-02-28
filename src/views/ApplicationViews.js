@@ -14,6 +14,7 @@ import { CommentForm } from "./CommentForm"
 import { UserList } from "../components/admin/UserList.js"
 import { CategoryManagement } from "../components/admin/CategoryManagement.js"
 import { Profile } from "../components/profile/Profile.jsx"
+import { HomePage } from "../components/profile/HomePage.jsx"
 import { CommentEditForm } from "./CommentEditForm"
 import { CommentDetail } from "./CommentDetail"
 
@@ -24,8 +25,7 @@ export const ApplicationViews = ({ token, setToken }) => {
       <Route path="/register" element={<Register setToken={setToken} />} />
 
       <Route element={<Authorized token={token} />}>
-        <Route path="/" element={<PostsList />} />
-
+        <Route path="/" element={<HomePage userId={token} />}/>
         <Route path="/post" element={<Outlet />}>
           <Route path=":postId" element={<ConditionalPostView />} />
 

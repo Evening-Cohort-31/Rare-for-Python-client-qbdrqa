@@ -56,13 +56,14 @@ export const CategoryList = () => {
                 <div className="column is-half is-offset-one-quarter">
 
                     {loading ? (
-                        Array.from({ length: 5}).map((_, i) => (
-                            <div className="card is-skeleton" key={i}/>
+                        Array.from({ length: 8}).map((_, i) => (
+                        <div className="card is-skeleton" key={i} style={{ marginTop: "10px", minHeight: 50}}>
+                        </div>
                         ))
                     ) : categories.length > 0 ? categories.map(category => (
                         <div className="card" key={category.id} style={{ marginTop: "10px", minHeight: 50}}>
                             <header className="card-header">
-                                <p className="card-header-title">{category.label}</p>
+                                <p className={`card-header-title ${loading ? 'is-skeleton': ""}`}>{category.label}</p>
                             </header>
                         </div>
                     )) : <>No Categories Found</>}

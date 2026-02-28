@@ -11,7 +11,6 @@ export const MyPosts = () => {
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState({error: false, message: ""})
-    const navigate = useNavigate()
 
     const isAuthor = useMemo(() => {
         return userId === localStorage.getItem("auth_token")

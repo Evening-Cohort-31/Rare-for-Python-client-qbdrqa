@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { getPostById } from "../../managers/PostManager"
+import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
 
 export const PostDetail = () => {
   const { id } = useParams()
@@ -27,13 +28,7 @@ export const PostDetail = () => {
     <>
       <h1>{post.title}</h1>
 
-      {post.image_url && (
-        <img
-          src={post.image_url}
-          alt="Post header"
-          style={{ maxWidth: "100%" }}
-        />
-      )}
+      <PostHeaderImage src={`http://localhost:8000/posts?image=${post.id}&v=${post.updated_at}`} />
 
       <div><strong>By:</strong> {post.author_display_name}</div>
 
