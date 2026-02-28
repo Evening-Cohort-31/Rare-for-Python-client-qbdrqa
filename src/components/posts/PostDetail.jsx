@@ -9,19 +9,30 @@ export const PostDetail = () => {
   useEffect(() => {
     getPostById(id).then(({ status, response }) => {
       if (status >= 200 && status < 300) {
-        response.then(setPost)
+        response.then((data) => {
+          setPost(data)
+        })
+      } else {
+        setPost(null)
       }
     })
   }, [id])
 
-  if (!post) return <p>Loading...</p>
+  // Prevent rendering until post exists AND has an id
+  if (!post?.id) {
+    return <p>Loading...</p>
+  }
 
   return (
     <>
       <h1>{post.title}</h1>
 
       {post.image_url && (
-        <img src={post.image_url} alt="Post header" style={{ maxWidth: "100%" }} />
+        <img
+          src={post.image_url}
+          alt="Post header"
+          style={{ maxWidth: "100%" }}
+        />
       )}
 
       <div><strong>By:</strong> {post.author_display_name}</div>

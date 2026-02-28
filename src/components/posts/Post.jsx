@@ -8,7 +8,9 @@ import { CommentForm } from "../../views/CommentForm.js"
 import { getCommentsByPostId } from "../../managers/CommentManager.js"
 import { BiUpArrow } from "react-icons/bi"
 
+
 export const Post = ({ post, edit = false, detail = false }) => {
+  
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [tagLimit, setTagLimit] = useState(10)
@@ -251,7 +253,7 @@ useEffect(() => {
                   <div className="message-header">
                     <div className="column is-two-thirds">
                       <h3 className="hide-overflow">{comment.subject}</h3>
-                      <p className="ml-3">{comment.author}</p>
+                      <p className="ml-3">{comment.author?.username}</p>
                     </div>
                     <div className="column is-one-third">                  
                       <HumanDate date={comment.created_on}/>

@@ -25,6 +25,20 @@ export const getUnapprovedPosts = () => {
   })
 }
 
+// Get Post Title for Comments Page
+export const getPostTitle = (id) => {
+  return fetch(`${apiUrl}/posts/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+  }).then((res) => {
+    const status = res.status
+    const response = res.json()
+    return { status, response }
+  })
+}
+
 // Create a new entry in the posts database
 export const createPost = (post) => {
     return fetch(`${apiUrl}/post`, {

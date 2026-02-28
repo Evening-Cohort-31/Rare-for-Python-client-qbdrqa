@@ -14,6 +14,8 @@ import { CommentForm } from "./CommentForm"
 import { UserList } from "../components/admin/UserList.js"
 import { CategoryManagement } from "../components/admin/CategoryManagement.js"
 import { Profile } from "../components/profile/Profile.jsx"
+import { CommentEditForm } from "./CommentEditForm"
+import { CommentDetail } from "./CommentDetail"
 
 export const ApplicationViews = ({ token, setToken }) => {
   return (
@@ -22,32 +24,38 @@ export const ApplicationViews = ({ token, setToken }) => {
       <Route path="/register" element={<Register setToken={setToken} />} />
 
       <Route element={<Authorized token={token} />}>
-        <Route path="/" element={<PostsList />}/>
+        <Route path="/" element={<PostsList />} />
+
         <Route path="/post" element={<Outlet />}>
-          <Route path=":postId" element={<ConditionalPostView/>}/>
-          <Route path=":id/comments" element={<Outlet />}>
-            <Route path="" element={<PostComments />}/>
-            <Route path="new" element={<CommentForm />}/>
+          <Route path=":postId" element={<ConditionalPostView />} />
+
+          <Route path=":postId/comments" element={<Outlet />}>
+            <Route index element={<PostComments />} />
+            <Route path="new" element={<CommentForm />} />
+            <Route path=":commentId" element={<CommentDetail />} />
+            <Route path=":commentId/edit" element={<CommentEditForm />} />
           </Route>
         </Route>
+
         <Route path="/posts" element={<Outlet />}>
-          <Route path="" element={<PostsList />} />
-          <Route path=":userId" element={<MyPosts />}/>
-          <Route path='edit/:id' element={<PostForm />}/>
+          <Route index element={<PostsList />} />
+          <Route path=":userId" element={<MyPosts />} />
+          <Route path="edit/:id" element={<PostForm />} />
           <Route path="tags/:tagId" element={<PostsList />} />
         </Route>
+
         <Route path="/users" element={<Outlet />}>
-          <Route path=":userId" element={<Profile />}/>
-          <Route path=":userId/posts" element={<MyPosts />}/>
+          <Route path=":userId" element={<Profile />} />
+          <Route path=":userId/posts" element={<MyPosts />} />
         </Route>
-        <Route path="/new_post" element={<PostForm/>}/>
+
+        <Route path="/new_post" element={<PostForm />} />
         <Route path="/categories" element={<CategoryList />} />
-        <Route path="/users" element={<UserList />} />
-        {/* Add Admin Routes here */}
-        <Route path="/admin" element={<Admin token={token}/>}>
-          <Route path="categories" element={<CategoryManagement />}/>
-          <Route path="unapproved_posts" element={<UnapprovedPosts/>}/>
-          <Route path="users" element={<UserList />}/>
+
+        <Route path="/admin" element={<Admin token={token} />}>
+          <Route path="categories" element={<CategoryManagement />} />
+          <Route path="unapproved_posts" element={<UnapprovedPosts />} />
+          <Route path="users" element={<UserList />} />
         </Route>
       </Route>
     </Routes>
