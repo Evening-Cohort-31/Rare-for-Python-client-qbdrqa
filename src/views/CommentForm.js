@@ -1,38 +1,42 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { createComment } from "../managers/CommentManager";
+import { useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { createComment } from "../managers/CommentManager"
 
-export const CommentForm = ({postId, onCommentAdded}) => {
-  const { id } = useParams(); // route is /post/:id/comments/new
-  const navigate = useNavigate();
+export const CommentForm = ({ postId, onCommentAdded }) => {
+  const { postId: routePostId } = useParams()
+  const navigate = useNavigate()
 
-  const [subject, setSubject] = useState("");
-  const [content, setContent] = useState("");
+  const [subject, setSubject] = useState("")
+  const [content, setContent] = useState("")
 
   const saveComment = (e) => {
-    e.preventDefault();
+    e.preventDefault()
+
+    const finalPostId = parseInt(postId ?? routePostId)
 
     const commentToSend = {
-      post_id: parseInt(id) || postId,
+      post_id: finalPostId,
       user_id: parseInt(localStorage.getItem("auth_token")),
       subject,
-      content,
-    };
+      content
+    }
 
     createComment(commentToSend).then(({ status, response }) => {
       if (status >= 200 && status < 300) {
         response.then((res) => {
           if (postId) {
-            onCommentAdded(res)
+            onCommentAdded?.(res)
             setSubject("")
             setContent("")
           } else {
-          navigate(`/post/${id}/comments`)}});
+            navigate(`/post/${finalPostId}/comments`)
+          }
+        })
       } else {
-        response.then(console.log);
+        response.then(console.log)
       }
-    });
-  };
+    })
+  }
 
   return (
     <form onSubmit={saveComment}>
@@ -63,18 +67,23 @@ export const CommentForm = ({postId, onCommentAdded}) => {
           />
         </div>
       </fieldset>
-      <fieldset className="field is-grouped">
 
+      <fieldset className="field is-grouped">
         <button className="button is-success" type="submit">
           Save
         </button>
-        <button className="button is-warning" onClick={() => {
-          setContent("")
-          setSubject("")
-          onCommentAdded && onCommentAdded()
-        }}>Cancel</button>
+        <button
+          type="button"
+          className="button is-warning"
+          onClick={() => {
+            setContent("")
+            setSubject("")
+            onCommentAdded?.()
+          }}
+        >
+          Cancel
+        </button>
       </fieldset>
-
     </form>
-  );
-};
+  )
+}

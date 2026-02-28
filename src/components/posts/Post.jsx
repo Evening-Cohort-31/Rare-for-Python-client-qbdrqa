@@ -9,6 +9,7 @@ import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
 
 export const Post = ({ post, edit = false, detail = false, approval=null }) => {
+  
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [tagLimit, setTagLimit] = useState(10)
