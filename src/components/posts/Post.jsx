@@ -188,7 +188,7 @@ useEffect(() => {
             </div>
             <div>
               <strong>Category: </strong>
-              {post?.category?.label ?? post?.category ?? ""}
+              <a href={`/categories/${post?.category.label.toLowerCase().replaceAll(" ","_")}`}>{post?.category?.label ?? post?.category ?? ""}</a>
             </div>
           </div>
 

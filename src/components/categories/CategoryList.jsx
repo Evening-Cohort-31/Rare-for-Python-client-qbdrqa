@@ -31,13 +31,15 @@ export const CategoryList = () => {
         setLoading(true)
         e.preventDefault()
 
-        if (categories.find( c => String(c.label).toLowerCase() === newCategoryLabel.toLowerCase())) {
+        const formatCategory = newCategoryLabel.replaceAll("_", "-")
+
+        if (categories.find( c => String(c.label).toLowerCase() === formatCategory.toLowerCase())) {
             setLoading(false)
             setError({error: true, message: "This category already exists"})
             return
         }
 
-        createCategory({"label": newCategoryLabel}).then(async res => {
+        createCategory({"label": formatCategory}).then(async res => {
             setLoading(false)
             setNewCategoryLabel("")
             const status = res.status

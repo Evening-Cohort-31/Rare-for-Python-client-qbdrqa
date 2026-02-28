@@ -1,5 +1,11 @@
 const apiUrl = "http://localhost:8000"
 
+const normalize = (res) => {
+  const status = res.status;
+  const response = res.json();
+  return { status, response };
+};
+
 // GET all categories
 export const getCategories = () => {
     return fetch(`${apiUrl}/categories`, {
@@ -7,12 +13,7 @@ export const getCategories = () => {
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
-    }).then(res => {
-        const status = res.status
-        const response = res.json()
-
-        return {status: status, response: response}
-    })
+    }).then(normalize)
 }
 
 //POST category
@@ -24,12 +25,7 @@ export const createCategory = (category) => {
             "Accept": "application/json"
         },
         body: JSON.stringify(category)
-    }).then(res => {
-        const status = res.status
-        const response = res.json()
-
-        return {status: status, response: response}
-    })
+    }).then(normalize)
 }
 
 //GET Category by ID
@@ -39,10 +35,5 @@ export const getCategoryById = (id) => {
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
-    }).then(res => {
-        const status = res.status
-        const response = res.json()
-
-        return {status: status, response: response}
-    })
+    }).then(normalize)
 }

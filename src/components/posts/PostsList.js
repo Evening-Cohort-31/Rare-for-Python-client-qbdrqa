@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getApprovedPublishedPosts, getPostByTag, searchPostsByTitle } from "../../managers/PostManager.js"
+import { getApprovedPublishedPosts, getPostByTag, getPostsByCategory, searchPostsByTitle } from "../../managers/PostManager.js"
 import { Post } from "./Post.jsx"
 import { useLocation, useParams, useSearchParams } from "react-router-dom"
 
@@ -11,6 +11,7 @@ export const PostsList = () => {
   const location = useLocation()
 
   const isTagRoute = !!params.tagId
+  const isCategoryRoute = !!params.category
 
   useEffect(() => {
     setLoading(true)
@@ -30,6 +31,13 @@ export const PostsList = () => {
       getPostByTag(params.tagId).then(({status, response}) => {
         setLoading(false)
         if (status >=200 && status < 300) {
+          response.then(setPosts)
+        }
+      })
+    } else if (isCategoryRoute) {
+      getPostsByCategory(params.category).then(({status, response}) => {
+        setLoading(false)
+        if (status >= 200 && status < 300) {
           response.then(setPosts)
         }
       })

@@ -50,7 +50,11 @@ export const ApplicationViews = ({ token, setToken }) => {
         </Route>
 
         <Route path="/new_post" element={<PostForm />} />
-        <Route path="/categories" element={<CategoryList />} />
+        <Route path="/categories" element={<Outlet/>}>
+          <Route path="" element={<CategoryList/>}/>
+          <Route path=":category" element={<PostsList />}/>
+        </Route>
+
 
         <Route path="/admin" element={<Admin token={token} />}>
           <Route path="categories" element={<CategoryManagement />} />
