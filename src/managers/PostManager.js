@@ -117,3 +117,17 @@ export const deletePost = (id) => {
     }
   }).then(normalize)
 }
+
+export const addReaction = (postId, userId, reactionId) => {
+  return fetch(`${apiUrl}/postReactions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      post_id: postId,
+      user_id: userId,
+      reaction_id: reactionId
+    })
+  }).then(normalize)
+}
