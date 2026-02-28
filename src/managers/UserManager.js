@@ -67,3 +67,14 @@ export const removeSubscription = (userId, subId) => {
     }
   }).then(normalize)
 }
+
+export const updateUser = (user) => {
+  return fetch(`http://localhost:8000/users/${user.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(user)
+  }).then(normalize)
+}

@@ -31,6 +31,12 @@ export const CategoryList = () => {
         setLoading(true)
         e.preventDefault()
 
+        if (categories.find( c => String(c.label).toLowerCase() === newCategoryLabel.toLowerCase())) {
+            setLoading(false)
+            setError({error: true, message: "This category already exists"})
+            return
+        }
+
         createCategory({"label": newCategoryLabel}).then(async res => {
             setLoading(false)
             setNewCategoryLabel("")
@@ -77,8 +83,12 @@ export const CategoryList = () => {
                             <div className="field">
                                 <label className="label">Label</label>
                                 <div className="control">
-                                    <input className="input" type="text" value={newCategoryLabel} onChange={(e) => setNewCategoryLabel(e.target.value)}/>
+                                    <input className="input" type="text" value={newCategoryLabel} onChange={(e) => {
+                                        setNewCategoryLabel(e.target.value)
+                                        setError(null)
+                                        }}/>
                                 </div>
+                                {error ? <p className="help is-danger">{error.message}</p> : <></>}
                             </div>
                         </div>
                         <footer className="card-footer">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   getAllUsers,
   toggleUserActivation,
+  updateUser,
 } from "../../managers/UserManager.js";
 import { Link } from "react-router-dom";
 import { BiDownArrow } from "react-icons/bi";
@@ -10,14 +11,15 @@ export const UserList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
+  const [action, setAction] = useState(null);
   const [filters, setFilters] = useState([{ type: "active", value: 1 }]);
   const [displayedUsers, setDisplayedUsers] = useState([]);
   const [activeFilter, setActiveFilter] = useState({
     active: false,
     selected: "active",
   });
-  const [selectedButton, setSelectedButton] = useState()
+
+  const approver_id = Number(localStorage.getItem("auth_token"))
 
   useEffect(() => {
     setLoading(true);
@@ -29,10 +31,10 @@ export const UserList = () => {
           setUsers(data);
           setDisplayedUsers(data);
         } else {
-          setError("Invalid response from server");
+          setError({ error: true, msg: "Invalid response from server" });
         }
       })
-      .catch((err) => setError(err.message));
+      .catch((err) => setError({ error: true, msg: err.message }));
   }, []);
 
   useEffect(() => {
@@ -47,17 +49,21 @@ export const UserList = () => {
     setDisplayedUsers(filteredUsers);
   }, [filters, users]);
 
-  const handleToggleUserActivation = (user) => {
-    const newStatus = !user.active;
-    toggleUserActivation({ ...user, active: newStatus }).then(async (res) => {
+  const handleToggleUserActivation = (user, buttonElement, type) => {
+    const action = {action: type, user_id : user.id, approver_id : approver_id}
+    updateUser({ ...user, action: action }).then(async (res) => {
+      buttonElement.classList.remove("is-loading")
       if (res.status === 200) {
         const response = await res.response;
         setUsers((prevUsers) =>
           prevUsers.map((u) => (u.id === user.id ? response : u)),
         );
+      } else if (res.status === 409) {
+        const r = await res.response;
+        setError({ error: true, msg: r.error });
       }
     });
-    setUser(null);
+    setAction(null);
   };
 
   const handleActiveFilter = (filterString) => {
@@ -72,27 +78,111 @@ export const UserList = () => {
     }
   };
 
+  const handlePromotion = (user, buttonElement, type) => {
+  const action = {action: type, user_id : user.id, approver_id : approver_id}
+    updateUser({ ...user, action: action }).then(
+      async ({ status, response }) => {
+        buttonElement.classList.remove("is-loading");
+        const res = await response;
+        if (status === 200) {
+          setUsers((prev) =>
+            prev.map((u) => {
+              return u.id === user.id ? res : u;
+            }),
+          );
+        } else if (status === 409) {
+          setError({ error: true, msg: res.error });
+        } else {
+          setError({ error: true, msg: "An unknown error occurred" });
+        }
+      },
+    );
+    setAction(null)
+  };
+
+  const handleDemotion = (user, buttonElement, type) => {
+    const action = {action: type, user_id : user.id, approver_id : approver_id}
+    updateUser({ ...user, action: action}).then(
+      async ({status, response}) => {
+        buttonElement.classList.remove("is-loading");
+        const res = await response;
+        if (status === 200) {
+          setUsers((prev) => 
+            prev.map((u) => {
+              return u.id === user.id ? res: u;
+            }),
+          );
+        } else if (status === 409) {
+          setError({ error: true, msg: res.error });
+        } else {
+          setError({ error: true, msg: "An unknown error occurred"});
+        }
+      },
+    );
+    setAction(null)
+  };
+
+  const checkForDisabled = (action, user) => {
+    if (user.type === "author" && action === "demote" && !user.active) {
+      return {disabled: true, title: "Must activate first"}
+    } else if (users.filter(u => u.type === "admin").length === 1 && user.type === "admin") {
+      return {disabled: true, title: `You cannot ${action} the last admin. Set a new admin first.`}
+    } else if ("demotion_queue" in user && user.demotion_queue.find(d => d.action === action)) {
+      if (user.demotion_queue.find(d => d.action === action ).approver_one_id === approver_id) {
+        return {disabled: true, title: `Another admin must finalize this action.`}} else {
+          return {disabled: false, title: ""}
+        }
+    } else {
+      return {disabled: false, title: ""}
+    }
+  } 
+
+  const handleCancelAction = (user, buttonElement, type) => {
+    const action = {action: type, user_id: user.id, approver_id: approver_id}
+    updateUser({...user, action: action}).then(async ({status, response}) => {
+      buttonElement.classList.remove("is-loading")
+      const res = await response
+      if (status === 200) {
+        setUsers(prev => prev.map(u => {
+          return u.id === user.id ? res: u
+        }))
+      } else if (status === 409) {
+        setError({error: true, msg: res.error})
+      } else {
+        setError({ error: true, msg: "An unknown error occurred"})
+      }
+    });
+    setAction(null)
+  }
+  
+  const confirmationStrings = {
+    "demote" : "demote",
+    "promote": "promote",
+    "deactivate": "deactivate",
+    "cancel deactivate" : "cancel the deactivation of ",
+    "cancel demote" : "cancel the demotion of "
+  }
+
   return (
     <div className="container">
-      {user && (
+      {action && (
         <div className="modal is-active">
-          <div className="modal-background" onClick={() => setUser(null)}></div>
+          <div className="modal-background" onClick={() => setAction(null)}></div>
           <div className="modal-content">
             <div className="box">
-              <p>{`Are you sure you want to ${user.active ? "deactivate" : "activate"} ${user.username}?`}</p>
+              <p>{`Are you sure you want to ${confirmationStrings[action.type]} ${action.user.username}?`}</p>
               <div className="field is-grouped pt-2">
                 <button
                   className="button is-success"
-                  onClick={() => handleToggleUserActivation(user)}
+                  onClick={() => action.method(action.user, action.button, action.type)}
                 >
                   Confirm
                 </button>
                 <button
                   className="button is-warning"
                   onClick={() => {
-                    setUser(null)
-                    selectedButton.classList.remove("is-loading")
-                    setSelectedButton(null)
+                    action.button.classList.remove("is-loading")
+                    setAction(null);
                   }}
                 >
                   Cancel
@@ -103,14 +193,14 @@ export const UserList = () => {
         </div>
       )}
       <h1 className="title is-3 my-4">All User Profiles</h1>
-      {error && <div className="notification is-danger">{error}</div>}
+      {error && <div className="notification is-danger">{error.msg}</div>}
       <table className="table is-fullwidth is-striped">
         <thead>
           <tr>
             <th style={{ width: "20%" }}>Username</th>
-            <th style={{ width: "25%" }}>Full Name</th>
-            <th style={{ width: "30%" }}>Email</th>
-            <th style={{ width: "10%" }}>Type</th>
+            <th style={{ width: "20%" }}>Full Name</th>
+            <th style={{ width: "25%" }}>Email</th>
+            <th style={{ width: "20%" }}>Type</th>
             <th style={{ width: "15%" }}>
               <div
                 className={`dropdown ${activeFilter.active ? "is-active" : ""}`}
@@ -133,7 +223,9 @@ export const UserList = () => {
                       })
                     }
                   >
-                    <span className="is-capitalized has-text-white">{activeFilter.selected}</span>
+                    <span className="is-capitalized has-text-white">
+                      {activeFilter.selected}
+                    </span>
                     <span className="icon is-small">
                       <BiDownArrow />
                     </span>
@@ -198,19 +290,80 @@ export const UserList = () => {
                   {user.first_name} {user.last_name}
                 </td>
                 <td>{user.email}</td>
-                <td>{user.is_staff ? "Admin" : "Author"}</td>
                 <td>
-                    <button
-                      className={`button is-small ${user.active ? 'is-warning' : "is-success"}`}
-                      onClick={(e) => 
-                        {
-                          e.target.classList.add("is-loading")
-                          setSelectedButton(e.target)
-                          setUser(user)
-                        }}
+                  <div
+                    className="tags has-addons"
+                    title={checkForDisabled("demote", user).title}
+                  >
+                    <span
+                      className={`tag ${user.type === "admin" ? "is-white" : "is-info"}`}
                     >
-                      {user.active ? 'Deactivate' : 'Activate'}
+                      {user.type === "admin" ? "Admin" : "Author"}
+                    </span>
+                    <button
+                      className={`tag button ${user.type === "admin" ? "is-danger" : "is-success"}`}
+                      disabled={
+                        checkForDisabled("demote", user).disabled
+                      }
+                      onClick={(e) => {
+                        e.target.classList.add("is-loading");
+                        setAction({user: user, method: user.type === "admin" ? handleDemotion : handlePromotion, type: user.type === "admin" ? "demote" : "promote", button: e.target})
+                      }}
+                    >
+                      {user.type === "admin" 
+                        ? 
+                          ("demotion_queue" in user && user.demotion_queue.find(d => d.action === "demote"))
+                            ? "Finalize Demotion"
+                            : "Start Demotion" 
+                        : "Promote"}
                     </button>
+                    {"demotion_queue" in user && user.demotion_queue.find(d => d.action === "demote") && 
+                      <button 
+                        className="tag is-delete" 
+                        title="Cancel Demotion"
+                        onClick={(e) => {
+                          e.target.classList.add("is-loading");
+                          setAction({user: user, method: handleCancelAction, type: "cancel demote", button: e.target})
+                        }}
+                      />}
+                  </div>
+                </td>
+                <td>
+                  <div className="tags has-addons" title={checkForDisabled("deactivate", user).title}>
+                    <button
+                      className={`button is-small tag ${user.active ? "is-danger" : "is-success"}`}
+                      onClick={(e) => {
+                        e.target.classList.add("is-loading");
+                        setAction({user: user, method: handleToggleUserActivation, type: user.active ? "deactivate" : "activate", button: e.target});
+                      }}
+                      disabled={checkForDisabled("deactivate", user).disabled}
+                    >
+                      {
+                        user.type === "author" 
+                          ?
+                            user.active 
+                            ? 
+                              "Deactivate" 
+                            : "Activate"
+                          :
+                            ("demotion_queue" in user && user.demotion_queue.find(d => d.action === "deactivate"))
+                            ?
+                            "Finalize Deactivation"
+                            : "Start Deactivation"
+                          
+                      }
+                    </button>
+                    {"demotion_queue" in user && user.demotion_queue.find(d => d.action === "deactivate") && 
+                      <button 
+                        className="tag is-delete" 
+                        title="Cancel Deactivation"
+                        onClick={(e) => {
+                          e.target.classList.add("is-loading")
+                          setAction({user: user, method: handleCancelAction, type: "cancel deactivate", button: e.target})
+
+                        }}
+                      />}
+                  </div>
                 </td>
               </tr>
             ))
