@@ -1,33 +1,43 @@
-import { useRef } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import "./NavBar.css"
-import Logo from "./rare.jpeg"
-import { AdminNavLinks } from "./AdminNavLinks.jsx"
-import { SearchBar } from "./SearchBar.jsx"
-import { ImProfile } from "react-icons/im"
-import { RxAvatar } from "react-icons/rx"
-import { RiAccountCircle2Fill } from "react-icons/ri"
-import { MdAccountCircle, MdOutlineAccountCircle } from "react-icons/md"
+import { useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./NavBar.css";
+import Logo from "./rare.jpeg";
+import { AdminNavLinks } from "./AdminNavLinks.jsx";
+import { SearchBar } from "./SearchBar.jsx";
+import { MdAccountCircle } from "react-icons/md";
 
 export const NavBar = ({ token, setToken }) => {
-  const navigate = useNavigate()
-  const navbar = useRef()
-  const hamburger = useRef()
+  const navigate = useNavigate();
+  const navbar = useRef();
+  const hamburger = useRef();
 
   const showMobileNavbar = () => {
-    hamburger.current.classList.toggle('is-active')
-    navbar.current.classList.toggle('is-active')
-  }
+    hamburger.current.classList.toggle("is-active");
+    navbar.current.classList.toggle("is-active");
+  };
 
   return (
-    <nav className="navbar is-success mb-3" role="navigation" aria-label="main navigation">
+    <nav
+      className="navbar is-primary mb-3"
+      role="navigation"
+      aria-label="main navigation"
+    >
       <div className="navbar-brand">
         <a className="navbar-item" href="/">
-          <img src={Logo} height="3rem" alt="Rare Logo" /> <h1 className="title is-4">Rare Publishing</h1>
+          <img src={Logo} height="3rem" alt="Rare Logo" />{" "}
+          <h1 className="title is-4">Rare Publishing</h1>
         </a>
 
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" onClick={showMobileNavbar} ref={hamburger}>
+        <a
+          role="button"
+          className="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navbarBasicExample"
+          onClick={showMobileNavbar}
+          ref={hamburger}
+        >
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
@@ -36,54 +46,70 @@ export const NavBar = ({ token, setToken }) => {
 
       <div className="navbar-menu" ref={navbar}>
         <div className="navbar-start">
-          {
-            token
-              ?
-              <>
-                <Link to="/" className="navbar-item">Posts</Link>
-                <Link to="/new_post" className="navbar-item">New Post</Link>
-                <Link to={`/posts/${token}`} className="navbar-item">My Posts</Link>
-                <Link to={`/categories`} className="navbar-item">Categories</Link>
-                <AdminNavLinks token={token} />
-              </>
-              :
-              ""
-          }
+          {token ? (
+            <>
+              <Link to="/posts" className="navbar-item">
+                Posts
+              </Link>
+              <Link to="/new_post" className="navbar-item">
+                New Post
+              </Link>
+              <Link to={`/posts/${token}`} className="navbar-item">
+                My Posts
+              </Link>
+              <Link to={`/categories`} className="navbar-item">
+                Categories
+              </Link>
+              <AdminNavLinks token={token} />
+            </>
+          ) : (
+            ""
+          )}
         </div>
 
         <div className="navbar-end">
           <div className="navbar-item">
-              <SearchBar />
+            <SearchBar />
           </div>
           <div className="navbar-item">
             <div className="buttons">
-              {
-                token
-                  ?
-                  <>
-                      <button className="button is-outlined" onClick={() => navigate(`/users/${token}`)}>
-                        <span className="icon is-large">
-                          <MdAccountCircle />
-                        </span>
-                        <span>Profile</span>
-                      </button>
-                    <button className="button is-outlined" onClick={() => {
-                      localStorage.removeItem("auth_token")
-                      setToken('')
-                      navigate('/login')
-                    }}>Logout</button>
-
-                  </>
-                  :
-                  <>
-                    <Link to="/register" className="button is-link">Register</Link>
-                    <Link to="/login" className="button is-outlined">Login</Link>
-                  </>
-              }
+              {token ? (
+                <>
+                  <button
+                    className="button is-outlined"
+                    onClick={() => navigate(`/users/${token}`)}
+                  >
+                    <span className="icon is-large">
+                      <MdAccountCircle />
+                    </span>
+                    <span>Profile</span>
+                  </button>
+                  <button
+                    className="button is-outlined"
+                    onClick={() => {
+                      localStorage.removeItem("auth_token");
+                      setToken("");
+                      navigate("/login");
+                    }}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/register" className="button is-link">
+                    Register
+                  </Link>
+                  <Link to="/login" className="button is-outlined">
+                    Login
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
+

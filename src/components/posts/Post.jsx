@@ -5,10 +5,11 @@ import { useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
 import { editPost, deletePost, addReaction, getPostById } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
-import { getCommentsByPostId } from "../../managers/CommentManager.js"
 import { BiUpArrow } from "react-icons/bi"
+import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
 
-export const Post = ({ post, edit = false, detail = false }) => {
+export const Post = ({ post, edit = false, detail = false, approval=null }) => {
+  
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [tagLimit, setTagLimit] = useState(10)
@@ -68,7 +69,6 @@ export const Post = ({ post, edit = false, detail = false }) => {
   const [addingComment, setAddingComment] = useState(false)
   const [viewingComments, setViewingComments] = useState(false)
   const [comments, setComments] = useState([])
-  const [loadingComments, setLoadingComments] = useState(false)
 
   const safePostTags = useMemo(() => post?.tags ?? [], [post])
 
@@ -76,17 +76,21 @@ export const Post = ({ post, edit = false, detail = false }) => {
     setPostTags(safePostTags)
   }, [safePostTags])
 
+  // useEffect(() => {
+  //   if (viewingComments) {
+  //     setLoadingComments(true)
+  //     getCommentsByPostId(post.id).then(({status, response}) => {
+  //       if (status >= 200 && status < 300) {
+  //         response.then(setComments)
+  //       }
+  //     })
+  //   }
+  //   setLoadingComments(false)
+  // },[post, viewingComments])
+
   useEffect(() => {
-    if (viewingComments) {
-      setLoadingComments(true)
-      getCommentsByPostId(post.id).then(({status, response}) => {
-        if (status >= 200 && status < 300) {
-          response.then(setComments)
-        }
-      })
-    }
-    setLoadingComments(false)
-  },[post, viewingComments])
+    setComments(post.comments)
+  },[post])
 
   const handleAddTag = (e) => {
     const newTag = allTags.find((t) => t.id === Number(e.target.value))
@@ -192,14 +196,7 @@ useEffect(() => {
       {detail && (
         <div className="card-image">
           <figure className="image is-16by9">
-            <img
-              src={
-                post?.image_url
-                  ? post.image_url
-                  : "https://cdn11.bigcommerce.com/s-3uewkq06zr/images/stencil/1280x1280/products/230/406/blue_b__05623.1492487362.png?c=2"
-              }
-              alt="post header"
-            />
+            <PostHeaderImage src={`http://localhost:8000/posts?image=${post.id}&v=${post.updated_at}`}/>
           </figure>
         </div>
       )}
@@ -311,12 +308,14 @@ useEffect(() => {
               <BiUpArrow className="button" style={{marginLeft: "auto"}} onClick={() => setViewingComments(false)}/>
             </div>
             <div style={{overflowY: "scroll", maxHeight: "300px"}} className="box comments-scroll">
-              {comments && comments.slice(0,3).map(comment => (
+              {comments.length > 0 && comments.slice(0,3).map(comment => (
                 <article className="message is-small" key={comment.id}>
                   <div className="message-header">
                     <div className="column is-two-thirds">
                       <h3 className="hide-overflow">{comment.subject}</h3>
-                      <p className="ml-3">{comment.author}</p>
+                      <button className="ml-3 has-text-link" onClick={() => {
+                        navigate(`/users/${comment.author.id}`)
+                      }}>{comment.author.username}</button>
                     </div>
                     <div className="column is-one-third">                  
                       <HumanDate date={comment.created_on}/>
@@ -328,21 +327,35 @@ useEffect(() => {
                   </div>
                 </article>
               ))}
-
+            {comments.length > 3 && 
             <div className="has-text-right">
               <button className="button is-text" style={{marginLeft: "auto"}} onClick={() => {navigate(`/post/${post.id}/comments`)}}>View More</button>
             </div>
+            }
           </div>
           </div>
         </div>
-        <div hidden={!addingComment && !loadingComments}>
+        <div hidden={!addingComment}>
             <CommentForm onCommentAdded={handleComments} postId={post.id} />
         </div>
       </div>
+      {approval 
+      ?
+      <footer className="card-footer">
+          <button className="card-footer-item button is-success" onClick={() => approval.handleApprove(post)}>Approve</button>
+          <button className="card-footer-item button is-danger" onClick={() => approval.handleDeny(post)}>Deny</button>
+      </footer> 
+      :
       <div className="card-footer">
-        <button className="card-footer-item has-text-success" onClick={() => setAddingComment(true)}>Add Comment</button>
-        <button className="card-footer-item has-text-info" onClick={() => setViewingComments(!viewingComments)}>View Comments</button>
-      </div>
+        <button className="card-footer-item button has-text-success" onClick={() => setAddingComment(true)} disabled={post.approved === 0}>Add Comment</button>
+        <button 
+          className={`card-footer-item button ${comments.length > 0 ? 'has-text-info' : 'has-text-gray'}`} 
+          onClick={() => comments.length > 0 && setViewingComments(!viewingComments)} 
+          disabled={comments.length === 0}
+        >
+          {!viewingComments ? "View Comments" : "Hide Comments"}
+        </button>
+      </div>}
     </div>
   )
 }

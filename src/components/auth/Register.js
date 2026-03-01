@@ -1,7 +1,8 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import { registerUser } from "../../managers/AuthManager"
+import { DragDrop } from "../utils/DragDrop.jsx"
 
 export const Register = ({setToken}) => {
   const firstName = useRef()
@@ -13,6 +14,7 @@ export const Register = ({setToken}) => {
   const verifyPassword = useRef()
   const passwordDialog = useRef()
   const navigate = useNavigate()
+  const [profileImage, setProfileImage] = useState(null)
 
   const handleRegister = (e) => {
     e.preventDefault()
@@ -25,7 +27,8 @@ export const Register = ({setToken}) => {
         email: email.current.value,
         password: password.current.value,
         bio: bio.current.value,
-        type: "Author"
+        profile_image: profileImage,
+        type: "author"
       }
 
       registerUser(newUser)
@@ -97,6 +100,11 @@ export const Register = ({setToken}) => {
           <div className="control">
             <textarea className="textarea" placeholder="Tell us about yourself..." ref={bio}></textarea>
           </div>
+        </div>
+
+        <div className="field">
+          <label className="label">Profile Picture</label>
+          <DragDrop setProfileImage={setProfileImage}/>
         </div>
 
         <div className="field is-grouped">

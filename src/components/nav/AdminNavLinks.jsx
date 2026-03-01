@@ -1,13 +1,18 @@
 import { Link } from "react-router-dom"
 import { IsAdmin } from "../utils/IsAdmin.js"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const AdminNavLinks = ({token}) => {
     const [isOpen, setIsOpen] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false)
 
     const closeDropdown = () => setIsOpen(false)
 
-    return IsAdmin(token) ?
+    useEffect(() => {
+        IsAdmin(token).then(setIsAdmin)
+    },[token])
+
+    return isAdmin ?
         (
             <div className={`navbar-item has-dropdown ${isOpen ? 'is-active' : ''}`} onMouseOver={() => setIsOpen(true)} onMouseOut={() => setIsOpen(false)}>
                 <button className="navbar-link" onClick={() => setIsOpen(!isOpen)}>
@@ -21,5 +26,5 @@ export const AdminNavLinks = ({token}) => {
             </div>
         ) 
         : 
-            <></> 
+        <></> 
 }
