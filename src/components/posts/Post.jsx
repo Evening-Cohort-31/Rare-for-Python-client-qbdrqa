@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
 import { useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
-import { editPost, deletePost } from "../../managers/PostManager.js"
+import { editPost, deletePost, addReaction, getPostById } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
 import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
@@ -17,6 +17,55 @@ export const Post = ({ post, edit = false, detail = false, approval=null }) => {
   const [postTags, setPostTags] = useState(post?.tags ?? [])
   const navigate = useNavigate()
   const [loadingTags, setLoadingTags] = useState(false)
+  const currentUserId = Number(localStorage.getItem("auth_token"))
+
+  const reactionEmojis = {
+    "happy": "😊",
+    "heart": "❤️",
+    "laugh": "😂",
+    "mind-blown": "🤯",
+    "fire": "🔥"
+  }
+
+  const getReactionCounts = () => {
+    const counts = {}
+    ;(post?.reactions ?? []).forEach((r) => {
+      const label = r.reaction.label
+      if (!counts[label]) {
+        counts[label] = { id: r.reaction.id, count: 0 }
+      }
+      counts[label].count++
+    })
+    return counts
+  }
+
+  const [reactionCounts, setReactionCounts] = useState(getReactionCounts())
+
+  useEffect(() => {
+    setReactionCounts(getReactionCounts())
+  }, [post?.reactions])
+
+  const handleReaction = (reactionId) => {
+    addReaction(post.id, currentUserId, reactionId).then(() => {
+      getPostById(post.id).then(({ status, response }) => {
+        if (status >= 200 && status < 300) {
+          response.then((updatedPost) => {
+            setReactionCounts(() => {
+              const counts = {}
+              ;(updatedPost?.reactions ?? []).forEach((r) => {
+                const label = r.reaction.label
+                if (!counts[label]) {
+                  counts[label] = { id: r.reaction.id, count: 0 }
+                }
+                counts[label].count++
+              })
+              return counts
+            })
+          })
+        }
+      })
+    })
+  }
   const [addingComment, setAddingComment] = useState(false)
   const [viewingComments, setViewingComments] = useState(false)
   const [comments, setComments] = useState([])
@@ -222,6 +271,22 @@ useEffect(() => {
           </div>
 
           {showTagManager && !loadingTags && tagManager}
+          {detail && (
+            <div style={{ marginBlock: 10, display: "flex", gap: "10px" }}>
+              {Object.entries(reactionCounts).map(([label, { id, count }]) => (
+                <button
+                  key={label}
+                  className="button is-small is-light"
+                  onClick={() => handleReaction(id)}
+                >
+                  {reactionEmojis[label] || label} {count}
+                </button>
+              ))}
+              {Object.keys(reactionCounts).length === 0 && (
+                <span style={{ color: "gray" }}>No reactions yet</span>
+              )}
+            </div>
+          )}
 
           <strong>Published: </strong>
           <HumanDate date={post?.publication_date} />
