@@ -12,6 +12,7 @@ export const PostsList = () => {
 
   const isTagRoute = !!params.tagId
   const isCategoryRoute = !!params.category
+  
 
   useEffect(() => {
     setLoading(true)
