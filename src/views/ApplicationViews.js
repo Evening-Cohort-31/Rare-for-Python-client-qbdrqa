@@ -17,6 +17,7 @@ import { Profile } from "../components/profile/Profile.jsx"
 import { HomePage } from "../components/profile/HomePage.jsx"
 import { CommentEditForm } from "./CommentEditForm"
 import { CommentDetail } from "./CommentDetail"
+import { CategoryEditForm } from "../components/admin/CategoryEditForm.js"
 
 export const ApplicationViews = ({ token, setToken }) => {
   return (
@@ -37,7 +38,9 @@ export const ApplicationViews = ({ token, setToken }) => {
           </Route>
         </Route>
 
-        <Route path="/posts" element={<Outlet />}>
+        <Route path="/posts" elem
+        
+        ent={<Outlet />}>
           <Route index element={<PostsList />} />
           <Route path=":userId" element={<MyPosts />} />
           <Route path="edit/:id" element={<PostForm />} />
@@ -58,6 +61,7 @@ export const ApplicationViews = ({ token, setToken }) => {
 
         <Route path="/admin" element={<Admin token={token} />}>
           <Route path="categories" element={<CategoryManagement />} />
+          <Route path="categories/:categoryId/edit" element={<CategoryEditForm />} />
           <Route path="unapproved_posts" element={<UnapprovedPosts />} />
           <Route path="users" element={<UserList />} />
         </Route>
