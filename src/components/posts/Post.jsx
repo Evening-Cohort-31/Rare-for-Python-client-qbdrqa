@@ -1,7 +1,7 @@
 import { MdEdit } from "react-icons/md"
 import { Link, useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
 import { editPost, deletePost, unapprovePost,addReaction, getPostById  } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
@@ -25,10 +25,12 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
     "heart": "❤️",
     "laugh": "😂",
     "mind-blown": "🤯",
-    "fire": "🔥"
+    "fire": "🔥",
+    "thumbs-up": "👍",
+    "celebrate": "🎉"
   }
 
-  const getReactionCounts = () => {
+  const getReactionCounts = useCallback(() => {
     const counts = {}
     ;(post?.reactions ?? []).forEach((r) => {
       const label = r.reaction.label
@@ -38,13 +40,13 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
       counts[label].count++
     })
     return counts
-  }
+  },[post?.reactions])
 
   const [reactionCounts, setReactionCounts] = useState(getReactionCounts())
 
   useEffect(() => {
     setReactionCounts(getReactionCounts())
-  }, [post?.reactions])
+  }, [post?.reactions, getReactionCounts])
 
   const handleReaction = (reactionId) => {
     addReaction(post.id, currentUserId, reactionId).then(() => {
@@ -52,8 +54,8 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
         if (status >= 200 && status < 300) {
           response.then((updatedPost) => {
             setReactionCounts(() => {
-              const counts = {}
-              ;(updatedPost?.reactions ?? []).forEach((r) => {
+              const counts = {};
+              (updatedPost?.reactions ?? []).forEach((r) => {
                 const label = r.reaction.label
                 if (!counts[label]) {
                   counts[label] = { id: r.reaction.id, count: 0 }

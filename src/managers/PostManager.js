@@ -162,10 +162,6 @@ export const addReaction = (postId, userId, reactionId) => {
     })
   }).then(normalize)
 }
-      "Content-Type": "application/json",
-    },
-  }).then(normalize);
-};
 
 export const getSubscribedPosts = (id) => {
   return fetch(`${apiUrl}/posts/${id}?subscriptions=true`, {
