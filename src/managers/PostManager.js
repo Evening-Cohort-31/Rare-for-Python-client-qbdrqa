@@ -1,3 +1,5 @@
+import { getCategories } from "./CategoryManager.js";
+
 const apiUrl = "http://localhost:8000";
 
 const normalize = (res) => {
@@ -162,3 +164,20 @@ export const getSubscribedPosts = (id) => {
   }).then(normalize);
 };
 
+export const getPostsByCategory = async (category) => {
+  const {status, response} = await getCategories()
+
+    if (status === 200) {
+      return response.then(res => {
+        const cat = res.find( c => c.label.toLowerCase() === category.split("_").join(" "))
+        const cat_id = cat.id
+
+        return fetch(`http://localhost:8000/posts?category_id=${cat_id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "Accept" : "application/json"
+          }
+        }).then(normalize)
+      })
+    }
+  }
