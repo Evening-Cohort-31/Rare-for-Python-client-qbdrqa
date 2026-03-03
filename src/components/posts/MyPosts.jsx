@@ -51,7 +51,7 @@ export const MyPosts = () => {
                         <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
                     ))
                 ) : posts.length > 0 ? posts.map((post) => (
-                    <Post post={post} edit={isAuthor} key={post.id}/>
+                    <Post post={post} edit={isAuthor} key={post.id} updatePost={setPosts}/>
                 )) : (
                     <p>No posts found.</p>
                 )}

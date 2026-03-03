@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { getPostById } from "../../managers/PostManager.js"
 import { Post } from "./Post.jsx"
+import { IsAdmin } from "../utils/IsAdmin.js"
 
 export const PostDetail = () => {
   const { postId } = useParams()
@@ -23,6 +24,10 @@ export const PostDetail = () => {
     })
   }, [postId])
 
+  const isAdmin = useMemo(() => {
+      return IsAdmin(localStorage.getItem("auth_token"))
+  }, [])
+
   useEffect(() => {
     post && setIsOwner(Number(localStorage.getItem("auth_token")) === post.user.id)
   }, [post])
@@ -37,7 +42,7 @@ export const PostDetail = () => {
         {
           loading 
             ? <div className="card is-skeleton" style={{marginTop: "10px", minHeight: 750, borderRadius: "10px"}}/>
-            : post && <Post post={post} detail edit={isOwner}/>
+            : post && <Post post={post} detail edit={isOwner} admin={isAdmin} updatePost={setPost}/>
         }
       </div>
     </div>

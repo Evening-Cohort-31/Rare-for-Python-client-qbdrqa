@@ -3,12 +3,13 @@ import { Link, useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
 import { useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
-import { editPost, deletePost, addReaction, getPostById } from "../../managers/PostManager.js"
+import { editPost, deletePost, unapprovePost,addReaction, getPostById  } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
 import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
+import { IsAdmin } from "../utils/IsAdmin.js"
 
-export const Post = ({ post, edit = false, detail = false, approval=null }) => {
+export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false }) => {
   
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -113,6 +114,14 @@ export const Post = ({ post, edit = false, detail = false, approval=null }) => {
     setViewingComments(true)
   }
 
+  const handleUnapprove = (postId) => {
+    unapprovePost(postId).then(({status, response}) => {
+      if (status === 200) {
+        response.then(post => updatePost(post))
+      }
+    })
+  }
+
 useEffect(() => {
         if (showTagManager) {
             getAllTags().then(res => res.response.then((res) => {
@@ -193,6 +202,12 @@ useEffect(() => {
         <Link className="card-header-title mb-0 is-size-4" to={`/post/${post.id}`}>
           {post.title}
         </Link>
+
+        {admin && post.approved ?
+          <span className="button is-text" onClick={() => {
+            handleUnapprove(post.id)
+          }}>Unapprove</span> : <></>
+        }
 
         {edit && (
           <button className="card-header-icon" aria-label="edit post">

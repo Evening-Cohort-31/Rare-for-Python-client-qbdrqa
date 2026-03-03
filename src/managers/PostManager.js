@@ -110,6 +110,18 @@ export const approvePost = (id) => {
   }).then(normalize);
 };
 
+export const unapprovePost = (id) => {
+  return fetch(`${apiUrl}/posts/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      approved: false,
+    })
+  }).then(normalize)
+}
+
 export const getPostByTag = (tagId) => {
   return fetch(`${apiUrl}/posts?tag_id=${tagId}`, {
     headers: {
