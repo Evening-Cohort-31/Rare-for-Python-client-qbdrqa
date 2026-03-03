@@ -37,3 +37,25 @@ export const getCategoryById = (id) => {
         }
     }).then(normalize)
 }
+
+//PUT Category
+export const updateCategory = (categoryId, category) => {
+  return fetch(`${apiUrl}/categories/${categoryId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify(category),
+  }).then(normalize)
+}
+
+// DELETE Category
+export const deleteCategory = (categoryId) => {
+  return fetch(`${apiUrl}/categories/${categoryId}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+    },
+  }).then((res) => ({ status: res.status }))
+}
