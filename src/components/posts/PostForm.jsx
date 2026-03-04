@@ -106,7 +106,7 @@ export const PostForm = ({edit = false}) => {
         setLoading(true)
 
         // Determine status based on save flag and user type
-        let status = "draft";
+        let status = edit ? formData.status : "draft";
         if (!save) {
             const isAdmin = await IsAdmin(userId);
             status = isAdmin ? "approved" : "submitted";
@@ -120,7 +120,7 @@ export const PostForm = ({edit = false}) => {
             content: formData.content,
             tags: formData.tags,
             status: status,
-            ...(edit && { id: postId, status: formData.status })
+            ...(edit && { id: postId })
         };
 
         (edit && postDetails.user_id === userId ? editPost(postDetails) : createPost(postDetails)).then(async res => {
@@ -239,7 +239,7 @@ export const PostForm = ({edit = false}) => {
                 <fieldset disabled={loading}>
                 <div className="field is-grouped">
                     <div className="control">
-                        <button className="button is-success" type="submit">Create & Submit</button>
+                        <button className="button is-success" type="submit">Submit</button>
                     </div>
                     <div className="control">
                         <button className="button is-link" onClick={(e) => {
