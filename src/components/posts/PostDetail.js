@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { getPostById, getReactionOptions } from "../../managers/PostManager.js"
+import { getPostById } from "../../managers/PostManager.js"
 import { Post } from "./Post.jsx"
 import { IsAdmin } from "../utils/IsAdmin.js"
 
@@ -19,10 +19,12 @@ export const PostDetail = () => {
       if (status >= 200 && status < 300) {
         response.then(setPost)
       } else {
-        response.then(console.log)
+        if (status === 404) {
+          navigate("/")
+        }
       }
     })
-  }, [postId])
+  }, [postId, navigate])
 
   const isAdmin = useMemo(() => {
       return IsAdmin(localStorage.getItem("auth_token"))
