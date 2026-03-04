@@ -12,7 +12,7 @@ export const PostComments = () => {
   const currentUserId = parseInt(localStorage.getItem("auth_token"))
 
   const load = () => {
-    getPostById(postId).then(({ status, response }) => {
+    getPostById(postId, currentUserId).then(({ status, response }) => {
       if (status >= 200 && status < 300) response.then(setPost)
     })
 

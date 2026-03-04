@@ -22,7 +22,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
 
   const handleReaction = (reactionId) => {
     addReaction(post.id, currentUserId, reactionId).then(() => {
-      getPostById(post.id).then(({ status, response }) => {
+      getPostById(post.id, currentUserId).then(({ status, response }) => {
         if (status >= 200 && status < 300) {
           response.then((updatedPost) => {
             updatePost(updatedPost)
@@ -303,8 +303,9 @@ useEffect(() => {
             </div>
           )}
 
-          <strong>Published: </strong>
-          <HumanDate date={post?.publication_date} />
+          {post.status === "approved" && 
+          <><strong>Published: </strong>
+          <HumanDate date={post?.publication_date} /></>}
           <div hidden={!viewingComments} className="pt-5">
             <div className="is-flex is-align-items-center pb-5">
               <h3 className="" style={{margin: 0}}>Comments</h3>

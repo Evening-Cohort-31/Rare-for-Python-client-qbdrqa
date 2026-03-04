@@ -20,7 +20,7 @@ export const getApprovedPublishedPosts = () => {
 
 // Create New Entry in the posts database
 export const getUnapprovedPosts = () => {
-  return fetch(`${apiUrl}/posts?approved=false`, {
+  return fetch(`${apiUrl}/posts?status=submitted`, {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -60,8 +60,8 @@ export const createPost = (post) => {
 };
 
 // Get All Specific User's posts
-export const getPostByUserId = (userId) => {
-  return fetch(`${apiUrl}/posts?user_id=${userId}`, {
+export const getPostByUserId = (userId, ownPosts = false) => {
+  return fetch(`${apiUrl}/posts?user_id=${userId}${ownPosts ? "&own_posts=true" : ""}`, {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -89,8 +89,8 @@ export const editPost = (post) => {
 };
 
 // Details Page
-export const getPostById = (id) => {
-  return fetch(`${apiUrl}/posts/${id}`, {
+export const getPostById = (id, userId) => {
+  return fetch(`${apiUrl}/posts/${id}?user_id=${userId}`, {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -98,17 +98,32 @@ export const getPostById = (id) => {
   }).then(normalize);
 };
 
-export const approvePost = (id) => {
+export const approvePost = (id, reviewerId) => {
   return fetch(`${apiUrl}/posts/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      approved: true,
+      action: "approve",
+      reviewer_id: reviewerId
     }),
   }).then(normalize);
 };
+
+export const denyPost = (id, reviewerId, adminComments) => {
+  return fetch(`${apiUrl}/posts/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      action: "reject",
+      reviewer_id: reviewerId,
+      admin_comments: adminComments || ""
+    })
+  }).then(normalize)
+}
 
 export const unapprovePost = (id) => {
   return fetch(`${apiUrl}/posts/${id}`, {

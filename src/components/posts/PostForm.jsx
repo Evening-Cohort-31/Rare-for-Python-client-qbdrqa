@@ -65,7 +65,7 @@ export const PostForm = ({edit = false}) => {
         if (edit && postId) {
             setLoading(true);
             
-            getPostById(postId).then(async res => {
+            getPostById(postId, userId).then(async res => {
                 setLoading(false);
                 
                 if (res.status === 200) {
@@ -111,7 +111,7 @@ export const PostForm = ({edit = false}) => {
             image: postHeaderImage,
             content: formData.content,
             tags: formData.tags,
-            approved: await IsAdmin(userId),
+            approved: await IsAdmin(userId) ? "approved" : "draft",
             ...(edit && { id: postId })
         };
 

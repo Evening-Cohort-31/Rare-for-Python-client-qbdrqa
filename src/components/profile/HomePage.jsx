@@ -29,7 +29,7 @@ export const HomePage = ({userId}) => {
 
     useEffect(() => {
         setLoading(true)
-        panelTabs[currentPanelTab].method(userId).then(({status, response}) => {
+        panelTabs[currentPanelTab].method(userId, panelTabs[currentPanelTab].label === "My Posts" && true).then(({status, response}) => {
             setLoading(false)
             if (status === 200) {
                 response.then((res) => {

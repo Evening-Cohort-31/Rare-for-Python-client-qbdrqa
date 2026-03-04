@@ -14,7 +14,7 @@ export const PostDetail = () => {
 
   useEffect(() => {
     setLoading(true)
-    getPostById(postId).then(({ status, response }) => {
+    getPostById(postId, Number(localStorage.getItem("auth_token"))).then(({ status, response }) => {
       setLoading(false)
       if (status >= 200 && status < 300) {
         response.then(setPost)
