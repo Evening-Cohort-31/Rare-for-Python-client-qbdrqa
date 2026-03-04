@@ -50,7 +50,7 @@ export const UnapprovedPosts = () => {
 
     return (
         <div className="columns is-centered">
-            <div className="column is-one-third">
+            <div className="column is-half">
                 <h1 className="title">Unapproved Posts</h1>
                 {/*Displays a skeleton while loading */}
                 {loading ? (

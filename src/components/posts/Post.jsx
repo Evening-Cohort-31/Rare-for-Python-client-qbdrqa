@@ -189,14 +189,14 @@ useEffect(() => {
 
       <header className="card-header">
         <Link 
-          style={{width: "66%"}}
+          style={{width: "50%"}}
           className="card-header-title mb-0 is-size-4" 
           to={`/post/${post.id}`}>
           {post.title}
         </Link>
 
-        <div className="buttons">
-          {admin && post.approved ?
+        <div className="buttons has-addons">
+          {detail && admin && post.approved ?
             <button className="button card-header-icon is-text" onClick={() => {
               handleUnapprove(post.id)
             }}>Unapprove</button> : <></>
