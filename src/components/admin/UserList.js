@@ -312,7 +312,7 @@ export const UserList = () => {
                       {user.type === "admin" 
                         ? 
                           ("demotion_queue" in user && user.demotion_queue.find(d => d.action === "demote"))
-                            ? "Finalize Demotion"
+                            ? "Demote"
                             : "Start Demotion" 
                         : "Promote"}
                     </button>
@@ -347,7 +347,7 @@ export const UserList = () => {
                           :
                             ("demotion_queue" in user && user.demotion_queue.find(d => d.action === "deactivate"))
                             ?
-                            "Finalize Deactivation"
+                            "Deactivate"
                             : "Start Deactivation"
                           
                       }
