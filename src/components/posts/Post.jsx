@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
 import { useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
-import { editPost, deletePost, unapprovePost,addReaction, getPostById, removeReaction  } from "../../managers/PostManager.js"
+import { editPost, deletePost, unapprovePost,addReaction, getPostById, removeReaction, submitPost  } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
 import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
@@ -19,6 +19,8 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
   const [loadingTags, setLoadingTags] = useState(false)
   const currentUserId = Number(localStorage.getItem("auth_token"))
   const [userReactions, setUserReactions] = useState([])
+  const [viewModal, setViewModal] = useState(false)
+  const [adminComments, setAdminComments] = useState("")
 
   const handleReaction = (reactionId) => {
     addReaction(post.id, currentUserId, reactionId).then(() => {
@@ -103,25 +105,25 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
     setViewingComments(true)
   }
 
-  const handleUnapprove = (postId) => {
-    unapprovePost(postId).then(({status, response}) => {
+  const handleUnapprove = (postId, comments) => {
+    unapprovePost(postId, currentUserId, comments).then(({status, response}) => {
       if (status === 200) {
         response.then(post => updatePost(post))
       }
     })
   }
 
-useEffect(() => {
-        if (showTagManager) {
-            getAllTags().then(res => res.response.then((res) => {
-                const filterCurrentTags = res.filter(tag => 
-                    !postTags.map(ptag => ptag.id).includes(tag.id)
-                )
-                setLoadingTags(false)
-                setAllTags(filterCurrentTags)
-            }))
-        }
-    }, [showTagManager, postTags])
+  useEffect(() => {
+          if (showTagManager) {
+              getAllTags().then(res => res.response.then((res) => {
+                  const filterCurrentTags = res.filter(tag => 
+                      !postTags.map(ptag => ptag.id).includes(tag.id)
+                  )
+                  setLoadingTags(false)
+                  setAllTags(filterCurrentTags)
+              }))
+          }
+      }, [showTagManager, postTags])
 
   const tagManager = (
     <div className="message is-info">
@@ -179,6 +181,49 @@ useEffect(() => {
 
   return (
     <div className="card" style={{ marginTop: "10px" }}>
+      <div className={`modal ${viewModal ? "is-active" : ""}`}>
+        <div 
+          className="modal-background"
+          onClick={() => setViewModal(false)}
+        />
+        <div className="modal-content">
+          <div className="box">
+            <div className="field">
+              <label className="label">Reason for unapproving/denying post:</label>
+              <div className="control">
+                <textarea 
+                  className="textarea" 
+                  placeholder="Rejection reasons" 
+                  required 
+                  value={adminComments}
+                  onChange={(e) => setAdminComments(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="field is-grouped">
+              <div className="control">
+                <button 
+                  className="button is-danger"
+                  onClick={() => {
+                    approval ? approval.handleDeny(post) : handleUnapprove(post.id, adminComments)
+                    setViewModal(false)
+                    setAdminComments("")
+                  }}
+                >Confirm</button>
+              </div>
+              <div className="control">
+                <button 
+                  className="button is-warning"
+                  onClick={() => {
+                    setViewModal(false)
+                    setAdminComments("")
+                  }}
+                >Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       {detail && (
         <div className="card-image">
           <figure className="image is-16by9">
@@ -196,9 +241,11 @@ useEffect(() => {
         </Link>
 
         <div className="buttons has-addons">
-          {detail && admin && post.approved ?
-            <button className="button card-header-icon is-text" onClick={() => {
-              handleUnapprove(post.id)
+          {detail && admin && post.status === "approved" ?
+            <button 
+              className="button card-header-icon is-text" 
+              onClick={() => {
+              setViewModal(true)
             }}>Unapprove</button> : <></>
           }
 
@@ -366,15 +413,17 @@ useEffect(() => {
             <CommentForm onCommentAdded={handleComments} postId={post.id} />
         </div>
       </div>
-      {approval 
+      {approval
       ?
       <footer className="card-footer">
           <button className="card-footer-item button is-success" onClick={() => approval.handleApprove(post)}>Approve</button>
-          <button className="card-footer-item button is-danger" onClick={() => approval.handleDeny(post)}>Deny</button>
+          <button className="card-footer-item button is-danger" onClick={() => setViewModal(true)}>Deny</button>
       </footer> 
       :
+      post.status === "approved" 
+      ?
       <div className="card-footer">
-        <button className="card-footer-item button has-text-success" onClick={() => setAddingComment(true)} disabled={post.approved === 0}>Add Comment</button>
+        <button className="card-footer-item button has-text-success" onClick={() => setAddingComment(true)} disabled={post.status !== "approved"}>Add Comment</button>
         <button 
           className={`card-footer-item button ${comments.length > 0 ? 'has-text-info' : 'has-text-gray'}`} 
           onClick={() => comments.length > 0 && setViewingComments(!viewingComments)} 
@@ -382,7 +431,21 @@ useEffect(() => {
         >
           {!viewingComments ? "View Comments" : "Hide Comments"}
         </button>
-      </div>}
+      </div>
+      :
+      post.status === "draft" || post.status === "rejected"
+      ?
+      <div className="card-footer">
+        <button className="card-footer-item button is-success" onClick={() => {
+          submitPost(post.id)
+        }}>Submit</button>
+        <button className="card-footer-item button is-link" onClick={() => {
+          navigate(`/post/${post.id}?edit=true`)
+        }}>Edit</button>
+      </div>   
+      :
+        <></>
+    }
     </div>
   )
 }

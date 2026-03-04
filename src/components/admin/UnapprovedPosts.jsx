@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react"
-import { approvePost, deletePost, denyPost, getUnapprovedPosts } from "../../managers/PostManager.js"
+import { approvePost, denyPost, getUnapprovedPosts } from "../../managers/PostManager.js"
 import { Post } from "../posts/Post.jsx"
-import { use } from "react"
 
 export const UnapprovedPosts = () => {
     const [error, setError] = useState({error: false, message: ""})
     const [loading, setLoading] = useState(false)
     const [posts, setPosts] = useState([])
     const [user, setUser] = useState(Number(localStorage.getItem("auth_token")))
-
+    
     useEffect(() => {
         setLoading(true)
         getUnapprovedPosts().then(({status, response}) => 

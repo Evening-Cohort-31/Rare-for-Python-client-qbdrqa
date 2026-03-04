@@ -35,7 +35,7 @@ export const PostDetail = () => {
   }, [post])
 
   useEffect(() => {
-    isOwner === false && post && post.approved === 0 && navigate("/")
+    isOwner === false && post && post.status !== "approved" && navigate("/")
   },[isOwner, post, navigate])
 
   return (

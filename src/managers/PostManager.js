@@ -51,7 +51,7 @@ export const createPost = (post) => {
   if (post.image) formData.append("image", post.image);
   formData.append("content", post.content);
   formData.append("tags", post.tags);
-  formData.append("approved", post.approved ? 1 : 0);
+  formData.append("status", post.status);
 
   return fetch(`${apiUrl}/post`, {
     method: "POST",
@@ -79,7 +79,6 @@ export const editPost = (post) => {
     formData.append("image", post.image);
   formData.append("content", post.content);
   formData.append("tags", JSON.stringify(post.tags));
-  formData.append("approved", post.approved);
   formData.append("id", post.id);
 
   return fetch(`${apiUrl}/posts/${post.id}`, {
@@ -125,14 +124,16 @@ export const denyPost = (id, reviewerId, adminComments) => {
   }).then(normalize)
 }
 
-export const unapprovePost = (id) => {
+export const unapprovePost = (id, reviewerId, adminComments="") => {
   return fetch(`${apiUrl}/posts/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      approved: false,
+      action: "reject",
+      reviewer_id: reviewerId,
+      admin_comments: adminComments || ""
     })
   }).then(normalize)
 }
@@ -221,3 +222,40 @@ export const getPostsByCategory = async (category) => {
       })
     }
   }
+
+
+export const getUserDrafts = (userId) => {
+  return fetch(`${apiUrl}/posts/${userId}?status="draft"`, {
+    headers: {
+      "Content-Type" : "application/json"
+    }
+  }).then(normalize)
+}
+
+export const getUserSubmittedPosts = (userId) => {
+  return fetch(`${apiUrl}/posts/${userId}?status="submitted`, {
+    headers: {
+      "Content-Type" : "application/json"
+    }
+  }).then(normalize)
+}
+
+export const getUserDeniedPosts = (userId) => {
+  return fetch(`${apiUrl}/posts/${userId}?status=rejected`, {
+    headers: {
+      "Content-Type" : "application/json"
+    }
+  }).then(normalize)
+}
+
+export const submitPost = (postId) => {
+  return fetch(`${apiUrl}/posts/${postId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      action: "submit"
+    })
+  }).then(normalize)
+}

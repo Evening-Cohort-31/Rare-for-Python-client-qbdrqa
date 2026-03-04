@@ -29,7 +29,7 @@ export const HomePage = ({userId}) => {
 
     useEffect(() => {
         setLoading(true)
-        panelTabs[currentPanelTab].method(userId, panelTabs[currentPanelTab].label === "My Posts" && true).then(({status, response}) => {
+        panelTabs[currentPanelTab].method(userId, panelTabs[currentPanelTab].label === "My Posts" && userId).then(({status, response}) => {
             setLoading(false)
             if (status === 200) {
                 response.then((res) => {
@@ -114,6 +114,64 @@ export const HomePage = ({userId}) => {
                                 ))}
                             </ul>
                         </>
+                        }
+                        {
+                            currentPanelTab === 1 &&
+                            <>
+                                <p className="menu-label">Filters</p>
+                                <ul className="menu-list">
+                                    <li>
+                                        <button
+                                            className={`${currentMenuTab === 0 ? "is-active" : ""}`}
+                                            onClick={() => {
+                                                setCurrentMenuTab(0)
+                                                setDisplayedPosts(posts)
+                                            }}
+                                            >{"All ( " + posts.length + " )"}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            className={`${currentMenuTab === 1 ? "is-active" : ""}`}
+                                            onClick={() => {
+                                                setCurrentMenuTab(1)
+                                                setDisplayedPosts(posts.filter(p => p.status === "approved"))
+                                            }}
+                                            >{"Published ( " + posts.filter(p => p.status === "approved").length + " )"} 
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            className={`${currentMenuTab === 2 ? "is-active" : ""}`}
+                                            onClick={() => {
+                                                setCurrentMenuTab(2)
+                                                setDisplayedPosts(posts.filter(p => p.status === "submitted"))
+                                            }}
+                                            >{"Pending ( " + posts.filter(p => p.status === "submitted").length + " )"}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            className={`${currentMenuTab === 3 ? "is-active" : ""}`}
+                                            onClick={() => {
+                                                setCurrentMenuTab(3)
+                                                setDisplayedPosts(posts.filter(p => p.status === "draft"))
+                                            }}
+                                            >{"Drafts ( " + posts.filter(p => p.status === "draft").length + " )"}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            className={`${currentMenuTab === 4 ? "is-active" : ""}`}
+                                            onClick={() => {
+                                                setCurrentMenuTab(4)
+                                                setDisplayedPosts(posts.filter(p => p.status === "rejected"))
+                                            }}
+                                            >{"Rejected ( " + posts.filter(p => p.status === "rejected").length + " )"}
+                                        </button>
+                                    </li>
+                                </ul>
+                            </>
                         }
                     </aside>
                 </div>
