@@ -79,6 +79,9 @@ export const CommentForm = ({ postId, onCommentAdded }) => {
             setContent("")
             setSubject("")
             onCommentAdded?.()
+            if (!onCommentAdded) {
+              navigate(-1)
+            }
           }}
         >
           Cancel

@@ -1,4 +1,4 @@
-import { MdEdit } from "react-icons/md"
+import { MdDelete, MdEdit } from "react-icons/md"
 import { Link, useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
 import { useEffect, useMemo, useState } from "react"
@@ -188,44 +188,49 @@ useEffect(() => {
       )}
 
       <header className="card-header">
-        <Link className="card-header-title mb-0 is-size-4" to={`/post/${post.id}`}>
+        <Link 
+          style={{width: "66%"}}
+          className="card-header-title mb-0 is-size-4" 
+          to={`/post/${post.id}`}>
           {post.title}
         </Link>
 
-        {admin && post.approved ?
-          <span className="button is-text" onClick={() => {
-            handleUnapprove(post.id)
-          }}>Unapprove</span> : <></>
-        }
+        <div className="buttons">
+          {admin && post.approved ?
+            <button className="button card-header-icon is-text" onClick={() => {
+              handleUnapprove(post.id)
+            }}>Unapprove</button> : <></>
+          }
 
-        {edit && (
-          <button className="card-header-icon" aria-label="edit post">
-            <span className="icon">
-              <MdEdit
-                onClick={() => {
-                  navigate(`/post/${post.id}?edit=true`)
-                }}
-              />
-            </span>
-          </button>
-        )}
+          {edit && (
+            <button className="button card-header-icon" aria-label="edit post">
+              <span className="icon">
+                <MdEdit
+                  onClick={() => {
+                    navigate(`/post/${post.id}?edit=true`)
+                  }}
+                />
+              </span>
+            </button>
+          )}
 
-        {edit && (
-          <button
-            className="card-header-icon has-text-danger"
-            aria-label="delete post"
-            onClick={() => {
-              const confirmed = window.confirm("Are you sure you want to delete this post?")
-              if (confirmed) {
-                deletePost(post.id).then(() => {
-                  navigate("/")
-                })
-              }
-            }}
-          >
-            🗑️ Delete
-          </button>
-        )}
+          {(edit || admin) && (
+            <button
+              className="button card-header-icon"
+              aria-label="delete post"
+              onClick={() => {
+                const confirmed = window.confirm("Are you sure you want to delete this post?")
+                if (confirmed) {
+                  deletePost(post.id).then(() => {
+                    navigate("/")
+                  })
+                }
+              }}
+            >
+              🗑️ 
+            </button>
+          )}
+        </div>
 
 
       </header>
@@ -309,19 +314,42 @@ useEffect(() => {
               {comments.length > 0 && comments.slice(0,3).map(comment => (
                 <article className="message is-small" key={comment.id}>
                   <div className="message-header">
-                    <div className="column is-two-thirds">
-                      <h3 className="has-text-white hide-overflow">{comment.subject}</h3>
-                      <button className="ml-3 has-text-link" onClick={() => {
-                        navigate(`/users/${comment.author.id}`)
-                      }}>{comment.author.username || comment.username}</button>
-                    </div>
-                    <div className="column is-one-third">                  
-                      <HumanDate date={comment.created_on}/>
-                    </div>
+                      <a 
+                        href={`/post/${post.id}/comments/${comment.id}`} 
+                        className="has-text-white hide-overflow is-size-6"
+                        style={{textDecorationLine: "none"}}
+                      >
+                        {comment.subject}
+                      </a>
+                      <div className="buttons ml-auto">
+                        {(currentUserId === comment.author?.id || currentUserId === comment?.author_id) && <button className="button">
+                          <span className="icon is-small">
+                            <MdEdit/>
+                          </span>
+                        </button>}
+                        {(currentUserId === comment.author?.id || currentUserId === comment?.author_id || admin) && <button className="button">
+                          <span className="icon is-small">
+                            <MdDelete/>
+                          </span>
+                        </button>}
+                      </div>
                   </div>
                   <div className="message-body">
-                    {comment.content}
-                    
+                    <div className="is-flex is-flex-direction-column">
+                      <span>{comment.content}</span>
+                      <div className="is-size-7 has-text-grey mt-3">
+                        <span>Posted on </span>
+                        <HumanDate date={comment.created_on}/>
+                        <span> by </span>
+                        <button 
+                          className="button is-ghost is-small p-0 has-text-link" 
+                          onClick={() => navigate(`/users/${comment.author.id}`)}
+                        >
+                          {comment.author?.username || comment?.username}
+                        </button>
+                      </div>
+                    </div>
+
                   </div>
                 </article>
               ))}

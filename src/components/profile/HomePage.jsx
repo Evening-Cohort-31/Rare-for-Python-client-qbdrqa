@@ -3,6 +3,7 @@ import { getUserById } from "../../managers/UserManager.js"
 import { Post } from "../posts/Post.jsx"
 import { BiSearchAlt2 } from "react-icons/bi"
 import { getApprovedPublishedPosts, getPostByUserId, getSubscribedPosts } from "../../managers/PostManager.js"
+import { IsAdmin } from "../utils/IsAdmin.js"
 
 const panelTabs = [{label: "All", method: getApprovedPublishedPosts}, {label: "My Posts", method: getPostByUserId}, {label: "Subscriptions", method: getSubscribedPosts}]
 
@@ -14,7 +15,7 @@ export const HomePage = ({userId}) => {
     const [currentMenuTab, setCurrentMenuTab] = useState(0)
     const [searchTerm, setSearchTerm] = useState("")
     const [loading, setLoading] = useState(false)
-
+    const [admin, setAdmin] = useState(IsAdmin(userId))
 
     useEffect(() => {
         setLoading(true)
@@ -118,7 +119,7 @@ export const HomePage = ({userId}) => {
                 </div>
                 <div className="column">
                     {!loading ? displayedPosts.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase())).map(post => (
-                        <Post key={post.id} post={post} edit={post.user.id === Number(userId)} />
+                        <Post key={post.id} post={post} edit={post.user.id === Number(userId)} admin={admin}/>
                     )) : (Array.from({ length: 5 }).map((_, i)=> (
                         <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
                     )))}
