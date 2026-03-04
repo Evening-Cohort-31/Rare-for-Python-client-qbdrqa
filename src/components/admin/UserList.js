@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   getAllUsers,
-  toggleUserActivation,
   updateUser,
 } from "../../managers/UserManager.js";
 import { Link } from "react-router-dom";
@@ -296,7 +295,7 @@ export const UserList = () => {
                     title={checkForDisabled("demote", user).title}
                   >
                     <span
-                      className={`tag ${user.type === "admin" ? "is-white" : "is-info"}`}
+                      className={`tag ${user.type === "admin" ? "is-warning" : "is-info"}`}
                     >
                       {user.type === "admin" ? "Admin" : "Author"}
                     </span>
@@ -313,7 +312,7 @@ export const UserList = () => {
                       {user.type === "admin" 
                         ? 
                           ("demotion_queue" in user && user.demotion_queue.find(d => d.action === "demote"))
-                            ? "Finalize Demotion"
+                            ? "Demote"
                             : "Start Demotion" 
                         : "Promote"}
                     </button>
@@ -348,7 +347,7 @@ export const UserList = () => {
                           :
                             ("demotion_queue" in user && user.demotion_queue.find(d => d.action === "deactivate"))
                             ?
-                            "Finalize Deactivation"
+                            "Deactivate"
                             : "Start Deactivation"
                           
                       }

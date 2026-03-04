@@ -18,6 +18,7 @@ import { HomePage } from "../components/profile/HomePage.jsx"
 import { CommentEditForm } from "./CommentEditForm"
 import { CommentDetail } from "./CommentDetail"
 import { CategoryEditForm } from "../components/admin/CategoryEditForm.js"
+import { ReactionManger } from "../components/admin/ReactionManager.jsx"
 
 export const ApplicationViews = ({ token, setToken }) => {
   return (
@@ -64,6 +65,7 @@ export const ApplicationViews = ({ token, setToken }) => {
           <Route path="categories/:categoryId/edit" element={<CategoryEditForm />} />
           <Route path="unapproved_posts" element={<UnapprovedPosts />} />
           <Route path="users" element={<UserList />} />
+          <Route path="reactions" element={<ReactionManger/>}/>
         </Route>
       </Route>
     </Routes>

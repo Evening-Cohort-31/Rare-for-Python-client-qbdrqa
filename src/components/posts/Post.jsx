@@ -1,15 +1,14 @@
 import { MdEdit } from "react-icons/md"
 import { Link, useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
-import { editPost, deletePost, unapprovePost,addReaction, getPostById  } from "../../managers/PostManager.js"
+import { editPost, deletePost, unapprovePost,addReaction, getPostById, removeReaction  } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
 import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
-import { IsAdmin } from "../utils/IsAdmin.js"
 
-export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false }) => {
+export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false}) => {
   
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -19,56 +18,43 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
   const navigate = useNavigate()
   const [loadingTags, setLoadingTags] = useState(false)
   const currentUserId = Number(localStorage.getItem("auth_token"))
-
-  const reactionEmojis = {
-    "happy": "😊",
-    "heart": "❤️",
-    "laugh": "😂",
-    "mind-blown": "🤯",
-    "fire": "🔥",
-    "thumbs-up": "👍",
-    "celebrate": "🎉"
-  }
-
-  const getReactionCounts = useCallback(() => {
-    const counts = {}
-    ;(post?.reactions ?? []).forEach((r) => {
-      const label = r.reaction.label
-      if (!counts[label]) {
-        counts[label] = { id: r.reaction.id, count: 0 }
-      }
-      counts[label].count++
-    })
-    return counts
-  },[post?.reactions])
-
-  const [reactionCounts, setReactionCounts] = useState(getReactionCounts())
-
-  useEffect(() => {
-    setReactionCounts(getReactionCounts())
-  }, [post?.reactions, getReactionCounts])
+  const [userReactions, setUserReactions] = useState([])
 
   const handleReaction = (reactionId) => {
     addReaction(post.id, currentUserId, reactionId).then(() => {
       getPostById(post.id).then(({ status, response }) => {
         if (status >= 200 && status < 300) {
           response.then((updatedPost) => {
-            setReactionCounts(() => {
-              const counts = {};
-              (updatedPost?.reactions ?? []).forEach((r) => {
-                const label = r.reaction.label
-                if (!counts[label]) {
-                  counts[label] = { id: r.reaction.id, count: 0 }
-                }
-                counts[label].count++
-              })
-              return counts
-            })
+            updatePost(updatedPost)
           })
         }
       })
     })
   }
+
+  const handleRemoveReaction = (postReactionId) => {
+    removeReaction(postReactionId).then(({status, response}) => {
+      if (status === 200) {
+        response.then(res => {
+          const removedReaction = post.reactions.find(r => r.id === postReactionId)
+          updatePost(prev => {
+            return {...prev, reactions: prev.reactions.filter(r => r.id !== postReactionId), reaction_counts: prev.reaction_counts.map(rc => {
+              if (rc.reaction_id === removedReaction.reaction.id) {
+                return {...rc, count: rc.count -= 1}
+              } else {
+                return rc
+              }
+            })}
+          })
+          setUserReactions(prev =>
+            prev.filter(r => r.reaction.id !== removedReaction.reaction.id)
+           )
+        })
+      }
+    })
+  }
+
+
   const [addingComment, setAddingComment] = useState(false)
   const [viewingComments, setViewingComments] = useState(false)
   const [comments, setComments] = useState([])
@@ -81,7 +67,8 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
 
   useEffect(() => {
     setComments(post.comments)
-  },[post])
+    setUserReactions(post.reactions.filter(pr => pr.user.id === currentUserId))
+  },[post, currentUserId])
 
   const handleAddTag = (e) => {
     const newTag = allTags.find((t) => t.id === Number(e.target.value))
@@ -243,7 +230,7 @@ useEffect(() => {
 
       </header>
 
-      <div className="card-content pt-0">
+      <div className="card-content pt-2">
         <div className="content">
           {detail && <div style={{ marginBlock: 10 }}>{post?.content}</div>}
 
@@ -288,20 +275,26 @@ useEffect(() => {
           </div>
 
           {showTagManager && !loadingTags && tagManager}
+
           {detail && (
-            <div style={{ marginBlock: 10, display: "flex", gap: "10px" }}>
-              {Object.entries(reactionCounts).map(([label, { id, count }]) => (
-                <button
-                  key={label}
-                  className="button is-small is-light"
-                  onClick={() => handleReaction(id)}
-                >
-                  {reactionEmojis[label] || label} {count}
-                </button>
+            <div className="buttons" style={{ marginBlock: 10, display: "flex", gap: "10px" }}>
+              {post.reaction_counts.map(r => (
+                <button 
+                  title={r.label}
+                  key={r.reaction_id}
+                  className={`button is-small ${userReactions.find(ur => ur.reaction.label === r.label) ? "is-success" : ""} `}
+                  style={{borderRadius: "99px"}}
+                  onClick={
+                    (e) => {
+                      e.target.classList.add("is-loading")
+                      const userReaction = userReactions.find(ur => ur.reaction.label === r.label) 
+                      userReaction
+                      ? handleRemoveReaction(userReaction.id)
+                      : handleReaction(r.reaction_id)}}
+                >{
+                  r.emoji + (r.count > 0 ? "x " + r.count : "")}</button>
+
               ))}
-              {Object.keys(reactionCounts).length === 0 && (
-                <span style={{ color: "gray" }}>No reactions yet</span>
-              )}
             </div>
           )}
 
@@ -317,7 +310,7 @@ useEffect(() => {
                 <article className="message is-small" key={comment.id}>
                   <div className="message-header">
                     <div className="column is-two-thirds">
-                      <h3 className="hide-overflow">{comment.subject}</h3>
+                      <h3 className="has-text-white hide-overflow">{comment.subject}</h3>
                       <button className="ml-3 has-text-link" onClick={() => {
                         navigate(`/users/${comment.author.id}`)
                       }}>{comment.author.username || comment.username}</button>

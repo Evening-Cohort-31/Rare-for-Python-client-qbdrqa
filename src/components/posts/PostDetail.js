@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { getPostById } from "../../managers/PostManager.js"
+import { getPostById, getReactionOptions } from "../../managers/PostManager.js"
 import { Post } from "./Post.jsx"
 import { IsAdmin } from "../utils/IsAdmin.js"
 
