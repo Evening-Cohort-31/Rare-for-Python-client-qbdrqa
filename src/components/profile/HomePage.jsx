@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { getUserById } from "../../managers/UserManager.js"
 import { Post } from "../posts/Post.jsx"
 import { BiSearchAlt2 } from "react-icons/bi"
@@ -6,7 +6,7 @@ import { getApprovedPublishedPosts, getPostByUserId, getSubscribedPosts } from "
 import { IsAdmin } from "../utils/IsAdmin.js"
 
 const panelTabs = [{label: "All", method: getApprovedPublishedPosts}, {label: "My Posts", method: getPostByUserId}, {label: "Subscriptions", method: getSubscribedPosts}]
-
+const userTabs = [{label: "All", filter: null}, {label: "Published", filter: "approved"}, {label: "Pending", filter: "submitted"}, {label: "Drafts", filter: "draft"}, {label: "Rejected", filter: "rejected"}]
 export const HomePage = ({userId}) => {
     const [user, setUser] = useState()
     const [posts, setPosts] = useState([])
@@ -21,7 +21,6 @@ export const HomePage = ({userId}) => {
         IsAdmin(localStorage.getItem("auth_token")).then(setIsAdmin)
     }, [])
 
-    //TODO: Figure out how to set posts or displayed posts to the correct filter after reload
     const refreshPosts = () => {
         setLoading(true)
         panelTabs[currentPanelTab].method(userId, panelTabs[currentPanelTab].label === "My Posts" && userId).then(({status, response}) => {
@@ -29,17 +28,13 @@ export const HomePage = ({userId}) => {
             if (status === 200) {
                 response.then((res) => {
                     setPosts(res)
-                    setDisplayedPosts(res)
-                    setCurrentMenuTab(0)
-                    setCurrentPanelTab(0)
             })
             }
         })
     }
 
     useEffect(() => {
-        setLoading(true)
-        
+        setLoading(true)        
         getUserById(userId).then(({status, response}) => {
             setLoading(false)
             if (status === 200) {
@@ -51,12 +46,14 @@ export const HomePage = ({userId}) => {
     useEffect(() => {
         setLoading(true)
         panelTabs[currentPanelTab].method(userId, panelTabs[currentPanelTab].label === "My Posts" && userId).then(({status, response}) => {
-            setLoading(false)
             if (status === 200) {
                 response.then((res) => {
                     setPosts(res)
                     setDisplayedPosts(res)
+                    setLoading(false)
             })
+            } else {
+                setLoading(false)
             }
         })
     }, [currentPanelTab, userId])
@@ -69,13 +66,25 @@ export const HomePage = ({userId}) => {
         return filteredPosts
     }
 
+    useEffect(() => {
+        if (currentPanelTab === 1) {
+            const filterTerm = userTabs[currentMenuTab].filter
+
+            if (!filterTerm) setDisplayedPosts(posts)
+            else setDisplayedPosts(posts.filter(post => {
+                return post.status === userTabs[currentMenuTab].filter
+            }))
+        }
+
+    },[posts, currentMenuTab, currentPanelTab])
+
     //TODO: Add error states/handling, add pagination
     return (
         <div className="columns is-centered">
         <article 
             className="panel column is-two-thirds mt-5 is-primary"
         >
-            <p className={`panel-heading`}>{user ? user.username : <p className="title has-skeleton">""</p>}</p>
+            <p className={`panel-heading`}>{user ? user.username : <span className="title has-skeleton">""</span>}</p>
             <p className="panel-tabs">
                 {panelTabs.map((tab, i) => (
                     <button
@@ -112,6 +121,7 @@ export const HomePage = ({userId}) => {
                                     <button 
                                         className={`${currentMenuTab === 0 ? "is-active" : ""}`} 
                                         onClick={() => {
+                                            setLoading(true)
                                             setCurrentMenuTab(0)
                                             setDisplayedPosts(posts)
                                         }}
@@ -143,50 +153,65 @@ export const HomePage = ({userId}) => {
                                 <ul className="menu-list">
                                     <li>
                                         <button
-                                            className={`${currentMenuTab === 0 ? "is-active" : ""}`}
+                                            className={`
+                                                button
+                                                ${currentMenuTab === 0 ? "is-active" : ""}
+                                                ${loading ? "is-loading" : ""}`
+                                            }
                                             onClick={() => {
                                                 setCurrentMenuTab(0)
-                                                setDisplayedPosts(posts)
                                             }}
                                             >{"All ( " + posts.length + " )"}
                                         </button>
                                     </li>
                                     <li>
                                         <button
-                                            className={`${currentMenuTab === 1 ? "is-active" : ""}`}
+                                            className={`
+                                                button
+                                                ${currentMenuTab === 1 ? "is-active" : ""}
+                                                ${loading ? "is-loading" : ""}
+                                                `}
                                             onClick={() => {
                                                 setCurrentMenuTab(1)
-                                                setDisplayedPosts(posts.filter(p => p.status === "approved"))
                                             }}
                                             >{"Published ( " + posts.filter(p => p.status === "approved").length + " )"} 
                                         </button>
                                     </li>
                                     <li>
                                         <button
-                                            className={`${currentMenuTab === 2 ? "is-active" : ""}`}
+                                            className={`
+                                                button
+                                                ${currentMenuTab === 2 ? "is-active" : ""}
+                                                ${loading ? "is-loading" : ""}
+                                                `}
                                             onClick={() => {
                                                 setCurrentMenuTab(2)
-                                                setDisplayedPosts(posts.filter(p => p.status === "submitted"))
                                             }}
                                             >{"Pending ( " + posts.filter(p => p.status === "submitted").length + " )"}
                                         </button>
                                     </li>
                                     <li>
                                         <button
-                                            className={`${currentMenuTab === 3 ? "is-active" : ""}`}
+                                            className={`
+                                                button
+                                                ${currentMenuTab === 3 ? "is-active" : ""}
+                                                ${loading ? "is-loading" : ""}
+                                                `}
                                             onClick={() => {
                                                 setCurrentMenuTab(3)
-                                                setDisplayedPosts(posts.filter(p => p.status === "draft"))
                                             }}
                                             >{"Drafts ( " + posts.filter(p => p.status === "draft").length + " )"}
                                         </button>
                                     </li>
                                     <li>
                                         <button
-                                            className={`${currentMenuTab === 4 ? "is-active" : ""}`}
+                                            className={`
+                                                button
+                                                ${currentMenuTab === 4 ? "is-active" : ""}
+                                                ${loading ? "is-loading" : ""}
+                                                `}
                                             onClick={() => {
                                                 setCurrentMenuTab(4)
-                                                setDisplayedPosts(posts.filter(p => p.status === "rejected"))
                                             }}
                                             >{"Rejected ( " + posts.filter(p => p.status === "rejected").length + " )"}
                                         </button>

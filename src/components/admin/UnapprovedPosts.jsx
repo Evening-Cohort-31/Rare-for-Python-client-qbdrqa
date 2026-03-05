@@ -35,8 +35,6 @@ export const UnapprovedPosts = () => {
             })
     }
 
-    //TODO: Possible additional functionality: Add a deny reason and notify user of post denial/deletion and reasoning 
-
     const handleDeny = (post, comments="") => {
         const postId = post.id
         setPosts(posts.filter(post => post.id !== postId))

@@ -231,7 +231,17 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
           </figure>
         </div>
       )}
-
+      {post.status === "rejected" && post.admin_comments &&
+        <article className="message is-warning">
+          <div className="message-header">
+            <p>Notice: Post Rejected</p>
+          </div>
+          <div className="message-body">
+            {post.admin_comments}
+          </div>
+        </article>
+      
+      }
       <header className="card-header">
         <Link 
           style={{width: "50%"}}
@@ -278,10 +288,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
             </button>
           )}
         </div>
-
-
       </header>
-
       <div className="card-content pt-2">
         <div className="content">
           {detail && <div style={{ marginBlock: 10 }}>{post?.content}</div>}
@@ -328,7 +335,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
 
           {showTagManager && !loadingTags && tagManager}
 
-          {detail && (
+          {post.status === "approved" && detail && (
             <div className="buttons" style={{ marginBlock: 10, display: "flex", gap: "10px" }}>
               {post.reaction_counts.map(r => (
                 <button 
@@ -416,15 +423,32 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
       {approval
       ?
       <footer className="card-footer">
-          <button className="card-footer-item button is-success" onClick={() => approval.handleApprove(post)}>Approve</button>
-          <button className="card-footer-item button is-danger" onClick={() => setViewModal(true)}>Deny</button>
+          <button 
+            style={{borderRadius: 0, borderBottomLeftRadius: "6px"}}
+            className="card-footer-item button is-success" 
+            onClick={() => approval.handleApprove(post)}
+          >Approve
+          </button>
+          <button 
+            style={{borderRadius: 0, borderBottomRightRadius: "6px"}}
+            className="card-footer-item button is-danger" 
+            onClick={() => setViewModal(true)}
+          >Deny
+          </button>
       </footer> 
       :
       post.status === "approved" 
       ?
       <div className="card-footer">
-        <button className="card-footer-item button has-text-success" onClick={() => setAddingComment(true)} disabled={post.status !== "approved"}>Add Comment</button>
         <button 
+          style={{borderRadius: 0, borderBottomLeftRadius: "6px"}}
+          className="card-footer-item button has-text-success" 
+          onClick={() => setAddingComment(true)} disabled={post.status !== "approved"}
+        >
+          Add Comment
+        </button>
+        <button 
+          style={{borderRadius: 0, borderBottomRightRadius: "6px"}}
           className={`card-footer-item button ${comments.length > 0 ? 'has-text-info' : 'has-text-gray'}`} 
           onClick={() => comments.length > 0 && setViewingComments(!viewingComments)} 
           disabled={comments.length === 0}
@@ -436,16 +460,29 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
       post.status === "draft" || post.status === "rejected"
       ?
       <div className="card-footer">
-        <button className="card-footer-item button is-success" onClick={() => {
+        <button 
+          style={{borderRadius: 0, borderBottomLeftRadius: "6px"}}
+          className="card-footer-item button is-success" 
+          onClick={() => {
           submitPost(post.id).then(({status, response}) => {
             if (status === 200) {
               refresh && refresh()
-            }
-          })
-        }}>Submit</button>
-        <button className="card-footer-item button is-link" onClick={() => {
+              updatePost && response.then(updatePost)
+              }
+            })
+          }}
+        >
+          Submit
+        </button>
+        <button 
+        style={{borderRadius: 0, borderBottomRightRadius: "6px"}}
+        className="card-footer-item button is-link" 
+        onClick={() => {
           navigate(`/post/${post.id}?edit=true`)
-        }}>Edit</button>
+        }}
+        >
+          Edit
+      </button>
       </div>   
       :
         <></>
