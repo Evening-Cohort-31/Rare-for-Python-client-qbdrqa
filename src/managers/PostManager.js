@@ -80,8 +80,11 @@ export const editPost = (post, draft=false) => {
   formData.append("content", post.content);
   formData.append("tags", JSON.stringify(post.tags));
   formData.append("id", post.id);
+  if (post.status)
+    formData.append("status", post.status);
   if (draft) {
-    formData.append("status", "draft")
+    if (post.status) formData.set("status", "draft")
+    else formData.append("status", "draft")
     formData.append("publication_date", "")
   }
 
