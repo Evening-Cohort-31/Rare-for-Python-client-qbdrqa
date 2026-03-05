@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { getUserById } from "../../managers/UserManager.js"
 import { Post } from "../posts/Post.jsx"
 import { BiSearchAlt2 } from "react-icons/bi"
@@ -15,8 +15,11 @@ export const HomePage = ({userId}) => {
     const [currentMenuTab, setCurrentMenuTab] = useState(0)
     const [searchTerm, setSearchTerm] = useState("")
     const [loading, setLoading] = useState(false)
-    const [admin, setAdmin] = useState(IsAdmin(userId))
+    const [isAdmin, setIsAdmin] = useState(false)
 
+    useEffect(() => {
+        IsAdmin(localStorage.getItem("auth_token")).then(setIsAdmin)
+    }, [])
 
     //TODO: Figure out how to set posts or displayed posts to the correct filter after reload
     const refreshPosts = () => {
@@ -36,6 +39,7 @@ export const HomePage = ({userId}) => {
 
     useEffect(() => {
         setLoading(true)
+        
         getUserById(userId).then(({status, response}) => {
             setLoading(false)
             if (status === 200) {
@@ -194,7 +198,7 @@ export const HomePage = ({userId}) => {
                 </div>
                 <div className="column">
                     {!loading ? displayedPosts.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase())).map(post => (
-                        <Post key={post.id} post={post} edit={post.user.id === Number(userId)} admin={admin} refresh={refreshPosts}/>
+                        <Post key={post.id} post={post} edit={post.user.id === Number(userId)} admin={isAdmin} refresh={refreshPosts}/>
                     )) : (Array.from({ length: 5 }).map((_, i)=> (
                         <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
                     )))}
