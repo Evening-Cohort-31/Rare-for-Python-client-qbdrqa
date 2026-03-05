@@ -7,6 +7,7 @@ import { IsAdmin } from "../utils/IsAdmin.js"
 
 const panelTabs = [{label: "All", method: getApprovedPublishedPosts}, {label: "My Posts", method: getPostByUserId}, {label: "Subscriptions", method: getSubscribedPosts}]
 const userTabs = [{label: "All", filter: null}, {label: "Published", filter: "approved"}, {label: "Pending", filter: "submitted"}, {label: "Drafts", filter: "draft"}, {label: "Rejected", filter: "rejected"}]
+
 export const HomePage = ({userId}) => {
     const [user, setUser] = useState()
     const [posts, setPosts] = useState([])
@@ -72,7 +73,7 @@ export const HomePage = ({userId}) => {
 
             if (!filterTerm) setDisplayedPosts(posts)
             else setDisplayedPosts(posts.filter(post => {
-                return post.status === userTabs[currentMenuTab].filter
+                return post.status === filterTerm
             }))
         }
 
