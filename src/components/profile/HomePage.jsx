@@ -85,7 +85,7 @@ export const HomePage = ({userId}) => {
         <article 
             className="panel column is-two-thirds mt-5 is-primary"
         >
-            <p className={`panel-heading`}>{user ? user.username : <span className="title has-skeleton">""</span>}</p>
+            <p className={`panel-heading`}>{user ? user.username : <span className="title has-skeleton">""""""""""</span>}</p>
             <p className="panel-tabs">
                 {panelTabs.map((tab, i) => (
                     <button
