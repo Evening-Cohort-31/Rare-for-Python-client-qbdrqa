@@ -17,6 +17,23 @@ export const HomePage = ({userId}) => {
     const [loading, setLoading] = useState(false)
     const [admin, setAdmin] = useState(IsAdmin(userId))
 
+
+    //TODO: Figure out how to set posts or displayed posts to the correct filter after reload
+    const refreshPosts = () => {
+        setLoading(true)
+        panelTabs[currentPanelTab].method(userId, panelTabs[currentPanelTab].label === "My Posts" && userId).then(({status, response}) => {
+            setLoading(false)
+            if (status === 200) {
+                response.then((res) => {
+                    setPosts(res)
+                    setDisplayedPosts(res)
+                    setCurrentMenuTab(0)
+                    setCurrentPanelTab(0)
+            })
+            }
+        })
+    }
+
     useEffect(() => {
         setLoading(true)
         getUserById(userId).then(({status, response}) => {
@@ -177,7 +194,7 @@ export const HomePage = ({userId}) => {
                 </div>
                 <div className="column">
                     {!loading ? displayedPosts.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase())).map(post => (
-                        <Post key={post.id} post={post} edit={post.user.id === Number(userId)} admin={admin}/>
+                        <Post key={post.id} post={post} edit={post.user.id === Number(userId)} admin={admin} refresh={refreshPosts}/>
                     )) : (Array.from({ length: 5 }).map((_, i)=> (
                         <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
                     )))}

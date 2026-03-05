@@ -8,7 +8,7 @@ import { CommentForm } from "../../views/CommentForm.js"
 import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
 
-export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false}) => {
+export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false, refresh=null}) => {
   
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -437,7 +437,11 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
       ?
       <div className="card-footer">
         <button className="card-footer-item button is-success" onClick={() => {
-          submitPost(post.id)
+          submitPost(post.id).then(({status, response}) => {
+            if (status === 200) {
+              refresh && refresh()
+            }
+          })
         }}>Submit</button>
         <button className="card-footer-item button is-link" onClick={() => {
           navigate(`/post/${post.id}?edit=true`)

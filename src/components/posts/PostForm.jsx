@@ -110,6 +110,8 @@ export const PostForm = ({edit = false}) => {
         if (!save) {
             const isAdmin = await IsAdmin(userId);
             status = isAdmin ? "approved" : "submitted";
+        } else {
+            status = "draft"
         }
 
         const postDetails = {
@@ -123,7 +125,7 @@ export const PostForm = ({edit = false}) => {
             ...(edit && { id: postId })
         };
 
-        (edit && postDetails.user_id === userId ? editPost(postDetails) : createPost(postDetails)).then(async res => {
+        (edit && postDetails.user_id === userId ? editPost(postDetails, save) : createPost(postDetails)).then(async res => {
             setLoading(false)
             if (res.status >= 200 && res.status < 300) {
                 const response = await res.response

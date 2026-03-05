@@ -70,7 +70,7 @@ export const getPostByUserId = (userId, ownPosts = false) => {
 };
 
 // Edit Single Post
-export const editPost = (post) => {
+export const editPost = (post, draft=false) => {
   const formData = new FormData();
   formData.append("user_id", post.user_id || post.user?.id);
   formData.append("category_id", post.category_id || post.category?.id);
@@ -80,6 +80,10 @@ export const editPost = (post) => {
   formData.append("content", post.content);
   formData.append("tags", JSON.stringify(post.tags));
   formData.append("id", post.id);
+  if (draft) {
+    formData.append("status", "draft")
+    formData.append("publication_date", "")
+  }
 
   return fetch(`${apiUrl}/posts/${post.id}`, {
     method: "PUT",
