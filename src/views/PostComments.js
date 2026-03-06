@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { getCommentsByPostId, deleteComment } from "../managers/CommentManager"
 import { getPostById } from "../managers/PostManager"
+import { Post } from "../components/posts/Post.jsx"
 
 export const PostComments = () => {
   const { postId } = useParams()
@@ -55,65 +56,56 @@ export const PostComments = () => {
   }
 
   return (
-    <>
-      <h1>Comments</h1>
-
-      {post && <h2 style={{ marginTop: "0.5rem" }}>{post.title}</h2>}
-
-      <div style={{ marginBottom: "1rem" }}>
-        <button className="has-text-link" onClick={() => navigate(-1)}>Back to Post</button>
-        {"  |  "}
-        <Link to={`/post/${postId}/comments/new`}>Add Comment</Link>
+    post && 
+    <div className="columns is-centered">
+      <div className="column is-half">
+      <Post post={post} updatePost={setPost} detail comment/>
+        <h1 className="title is-size-4">Comments</h1>
+          <Link to={`/post/${postId}/comments/new`}>Add Comment</Link>
+        {comments.map((c) => (
+          <section key={`comment--${c.id}`} className="box">
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div>
+                <strong>{c.subject}</strong>
+              </div>
+              <div style={{ fontSize: ".9rem", opacity: ".75" }}>
+                {new Date(c.created_on).toLocaleDateString("en-US")}
+              </div>
+            </div>
+            <div style={{ marginTop: ".5rem" }}>{c.content}</div>
+            <div style={{ marginTop: ".5rem", opacity: ".85" }}>
+              By {c.author?.username ?? c.author_display_name ?? "Unknown"}
+            </div>
+            <div style={{ marginTop: ".75rem", display: "flex", gap: ".75rem" }}>
+              <button
+                className="button is-small"
+                type="button"
+                onClick={() => navigate(`/post/${postId}/comments/${c.id}`)}
+              >
+                View
+              </button>
+              {canEditDelete(c) && (
+                <>
+                  <button
+                    className="button is-small is-info"
+                    type="button"
+                    onClick={() => navigate(`/post/${postId}/comments/${c.id}/edit`)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="button is-small is-danger"
+                    type="button"
+                    onClick={() => handleDelete(c.id)}
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
+          </section>
+        ))}
       </div>
-
-      {comments.map((c) => (
-        <section key={`comment--${c.id}`} className="box">
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div>
-              <strong>{c.subject}</strong>
-            </div>
-            <div style={{ fontSize: ".9rem", opacity: ".75" }}>
-              {new Date(c.created_on).toLocaleDateString("en-US")}
-            </div>
-          </div>
-
-          <div style={{ marginTop: ".5rem" }}>{c.content}</div>
-
-          <div style={{ marginTop: ".5rem", opacity: ".85" }}>
-            By {c.author?.username ?? c.author_display_name ?? "Unknown"}
-          </div>
-
-          <div style={{ marginTop: ".75rem", display: "flex", gap: ".75rem" }}>
-            <button
-              className="button is-small"
-              type="button"
-              onClick={() => navigate(`/post/${postId}/comments/${c.id}`)}
-            >
-              View
-            </button>
-
-            {canEditDelete(c) && (
-              <>
-                <button
-                  className="button is-small is-info"
-                  type="button"
-                  onClick={() => navigate(`/post/${postId}/comments/${c.id}/edit`)}
-                >
-                  Edit
-                </button>
-
-                <button
-                  className="button is-small is-danger"
-                  type="button"
-                  onClick={() => handleDelete(c.id)}
-                >
-                  Delete
-                </button>
-              </>
-            )}
-          </div>
-        </section>
-      ))}
-    </>
+    </div>
   )
 }

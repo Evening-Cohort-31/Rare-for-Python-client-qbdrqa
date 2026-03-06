@@ -9,7 +9,7 @@ import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
 import { deleteComment } from "../../managers/CommentManager.js"
 
-export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false, refresh=null}) => {
+export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false, refresh=null, comment=false}) => {
   
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -227,11 +227,8 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
         </div>
       </div>
       {detail && (
-        <div className="card-image">
-          <figure className="image is-16by9">
             <PostHeaderImage src={`http://localhost:8000/posts?image=${post.id}&v=${post.updated_at}`}/>
-          </figure>
-        </div>
+
       )}
       {post.status === "rejected" && post.admin_comments &&
         <article className="message is-warning">
@@ -479,7 +476,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
           </button>
       </footer> 
       :
-      post.status === "approved" 
+      post.status === "approved" && !comment 
       ?
       <div className="card-footer">
         <button 
