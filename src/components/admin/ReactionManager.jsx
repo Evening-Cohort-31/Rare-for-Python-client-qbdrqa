@@ -65,12 +65,16 @@ export const ReactionManger = () => {
             <div className='modal-background' onClick={() => setIsModalActive(false)}></div>
             <div className='modal-content'>
                 <div className='box'>
-                    <EmojiPicker onEmojiClick={(emojiData) => {
+                    <div className='is-flex is-justify-content-center'>
+                    <EmojiPicker 
+                    theme='auto'
+                    onEmojiClick={(emojiData) => {
                         const reaction = {...selectedReaction, label: emojiData.names.pop(), emoji: emojiData.emoji}
                         handler(reaction)                      
                         setIsModalActive(false)
-                    }} /> 
-                </div>
+                    }} />
+                    </div> 
+                </div>  
             </div>
             <button className='modal-close is-large' aria-label='close' onClick={() => setIsModalActive(false)}></button>
         </div>

@@ -155,6 +155,7 @@ export const UserList = () => {
   }
   
   const confirmationStrings = {
+    "activate" : "activate",
     "demote" : "demote",
     "promote": "promote",
     "deactivate": "deactivate",
@@ -222,7 +223,7 @@ export const UserList = () => {
                       })
                     }
                   >
-                    <span className="is-capitalized has-text-white">
+                    <span className="is-capitalized">
                       {activeFilter.selected}
                     </span>
                     <span className="icon is-small">
