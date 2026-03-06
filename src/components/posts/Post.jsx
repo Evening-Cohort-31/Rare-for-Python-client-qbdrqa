@@ -259,7 +259,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
           }
 
           {edit && (
-            <button className="button card-header-icon" aria-label="edit post">
+            <button className="button card-header-icon is-text" aria-label="edit post">
               <span className="icon">
                 <MdEdit
                   onClick={() => {
@@ -272,7 +272,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
 
           {(edit || admin) && (
             <button
-              className="button card-header-icon"
+              className="button card-header-icon is-text"
               aria-label="delete post"
               onClick={() => {
                 const confirmed = window.confirm("Are you sure you want to delete this post?")
@@ -283,7 +283,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
                 }
               }}
             >
-              🗑️ 
+              <MdDelete/>
             </button>
           )}
         </div>

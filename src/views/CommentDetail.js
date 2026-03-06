@@ -39,7 +39,8 @@ export const CommentDetail = () => {
   if (!comment) return <p>Loading...</p>
 
   return (
-    <>
+    <div className="columns is-centered">
+      <div className="column is-half">
       <h1>Comment Details</h1>
 
       <div style={{ marginBottom: "1rem" }}>
@@ -63,6 +64,7 @@ export const CommentDetail = () => {
           Delete
         </button>}
       </section>
-    </>
+      </div>
+    </div>
   )
 }
