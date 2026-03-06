@@ -359,7 +359,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
           {post.status === "approved" && 
           <><strong>Published: </strong>
           <HumanDate date={post?.publication_date} /></>}
-          <div hidden={!viewingComments} className="pt-5">
+          <div hidden={!viewingComments || comments.length === 0} className="pt-5">
             <div className="is-flex is-align-items-center pb-5">
               <h3 className="" style={{margin: 0}}>Comments</h3>
               <BiUpArrow className="button" style={{marginLeft: "auto"}} onClick={() => setViewingComments(false)}/>
