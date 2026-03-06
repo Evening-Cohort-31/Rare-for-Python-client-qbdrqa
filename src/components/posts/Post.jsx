@@ -288,8 +288,8 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
           )}
         </div>
       </header>
-      <div className="card-content pt-2">
-        <div className="content">
+      <div className="card-content py-3">
+        <div className="content mb-0">
           {detail && <div style={{ marginBlock: 10 }}>{post?.content}</div>}
 
           <div>
