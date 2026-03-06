@@ -7,6 +7,7 @@ import { editPost, deletePost, unapprovePost,addReaction, getPostById, removeRea
 import { CommentForm } from "../../views/CommentForm.js"
 import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
+import { deleteComment } from "../../managers/CommentManager.js"
 
 export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false, refresh=null}) => {
   
@@ -21,6 +22,7 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
   const [userReactions, setUserReactions] = useState([])
   const [viewModal, setViewModal] = useState(false)
   const [adminComments, setAdminComments] = useState("")
+  const [viewCommentModal, setViewCommentModal] = useState(false)
 
   const handleReaction = (reactionId) => {
     addReaction(post.id, currentUserId, reactionId).then(() => {
@@ -368,6 +370,34 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
             <div style={{overflowY: "scroll", maxHeight: "300px"}} className="box comments-scroll">
               {comments.length > 0 && comments.slice(0,3).map(comment => (
                 <article className="message is-small" key={comment.id}>
+                  <div className={`modal ${viewCommentModal ? "is-active" : ""}`}>
+                      <div 
+                      className="modal-background"
+                      onClick={() => setViewCommentModal(false)}
+                    />
+                      <div className="modal-content">
+                        <p>Are you sure you want to delete this comment?</p>
+                        <div className="buttons">
+                              <button 
+                                className="button is-danger"
+                                onClick={() => {
+                                  deleteComment(comment.id).then(({status, response}) => {
+                                    if (status === 200) {
+                                      setComments(prev => prev.filter(c => c.id !== comment.id))
+                                    }
+                                  })
+                                  setViewCommentModal(false)
+                                }}
+                              >Confirm</button>
+                              <button 
+                                className="button is-warning"
+                                onClick={() => {
+                                  setViewCommentModal(false)
+                                }}
+                              >Cancel</button>
+                        </div>
+                      </div>
+                  </div>
                   <div className="message-header">
                       <a 
                         href={`/post/${post.id}/comments/${comment.id}`} 
@@ -377,12 +407,24 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
                         {comment.subject}
                       </a>
                       <div className="buttons ml-auto">
-                        {(currentUserId === comment.author?.id || currentUserId === comment?.author_id) && <button className="button">
+                        {(currentUserId === comment.author?.id || currentUserId === comment?.author_id) && 
+                        <button 
+                          className="button"
+                          onClick={() => {
+                            navigate(`/post/${post.id}/comments/${comment.id}/edit`)
+                          }}
+                          >
                           <span className="icon is-small">
                             <MdEdit/>
                           </span>
                         </button>}
-                        {(currentUserId === comment.author?.id || currentUserId === comment?.author_id || admin) && <button className="button">
+                        {(currentUserId === comment.author?.id || currentUserId === comment?.author_id || admin) && 
+                        <button 
+                          className="button"
+                          onClick={() => {
+                            setViewCommentModal(true)
+                          }}
+                          >
                           <span className="icon is-small">
                             <MdDelete/>
                           </span>
