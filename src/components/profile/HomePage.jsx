@@ -125,6 +125,7 @@ export const HomePage = ({userId}) => {
                                             setLoading(true)
                                             setCurrentMenuTab(0)
                                             setDisplayedPosts(posts)
+                                            setLoading(false)
                                         }}
                                         >All
                                     </button>
