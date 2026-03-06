@@ -100,7 +100,7 @@ export const PostComments = () => {
               <div style={{ marginTop: ".5rem", opacity: ".85" }}>
                 By {c.author?.username ?? c.author_display_name ?? "Unknown"}
               </div>
-              <div style={{ marginTop: ".75rem", display: "flex", gap: ".75rem" }}>
+              <div className="buttons" style={{ marginTop: ".75rem" }}>
                 <button
                   className="button is-small"
                   type="button"
