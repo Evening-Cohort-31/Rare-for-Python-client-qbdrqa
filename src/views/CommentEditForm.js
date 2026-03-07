@@ -29,7 +29,7 @@ export const CommentEditForm = () => {
 
     updateComment(commentId, { subject, content }).then(({ status, response }) => {
       if (status >= 200 && status < 300) {
-        response.then(() => navigate(`/post/${id}/comments/${commentId}`))
+        response.then(() => navigate(-1))
       } else {
         response.then(console.log)
       }
@@ -37,43 +37,44 @@ export const CommentEditForm = () => {
   }
 
   const cancel = () => {
-    navigate(`/post/${id}/comments`)
+    navigate(-1)
   }
 
   if (!comment) return <p>Loading...</p>
 
   return (
-    <form onSubmit={save}>
-      <h1>Edit Comment</h1>
-
-      <fieldset className="field">
-        <label className="label">Subject</label>
-        <div className="control">
-          <input
-            className="input"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-          />
-        </div>
-      </fieldset>
-
-      <fieldset className="field">
-        <label className="label">Content</label>
-        <div className="control">
-          <textarea
-            className="textarea"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            rows={6}
-          />
-        </div>
-      </fieldset>
-
-      <button className="button is-link" type="submit">Save</button>
-      <button className="button" type="button" onClick={cancel} style={{ marginLeft: "0.5rem" }}>
-        Cancel
-      </button>
-    </form>
+    <div className="columns is-centered">
+      <div className="column is-half">
+        <form onSubmit={save}>
+          <h1>Edit Comment</h1>
+          <fieldset className="field">
+            <label className="label">Subject</label>
+            <div className="control">
+              <input
+                className="input"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+              />
+            </div>
+          </fieldset>
+          <fieldset className="field">
+            <label className="label">Content</label>
+            <div className="control">
+              <textarea
+                className="textarea"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                required
+                rows={6}
+              />
+            </div>
+          </fieldset>
+          <button className="button is-link" type="submit">Save</button>
+          <button className="button" type="button" onClick={cancel} style={{ marginLeft: "0.5rem" }}>
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
   )
 }

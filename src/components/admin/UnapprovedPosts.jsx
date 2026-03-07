@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
-import { approvePost, deletePost, getUnapprovedPosts } from "../../managers/PostManager.js"
+import { approvePost, denyPost, getUnapprovedPosts } from "../../managers/PostManager.js"
 import { Post } from "../posts/Post.jsx"
 
 export const UnapprovedPosts = () => {
     const [error, setError] = useState({error: false, message: ""})
     const [loading, setLoading] = useState(false)
     const [posts, setPosts] = useState([])
-
+    const [user, setUser] = useState(Number(localStorage.getItem("auth_token")))
+    
     useEffect(() => {
         setLoading(true)
         getUnapprovedPosts().then(({status, response}) => 
@@ -19,7 +20,7 @@ export const UnapprovedPosts = () => {
     const handleApprove = (post) => {
         const postId = post.id
         setLoading(true)
-        approvePost(postId)
+        approvePost(postId, user)
             .then(({status, response}) => 
             {
                 if (status === 200) {    
@@ -34,12 +35,10 @@ export const UnapprovedPosts = () => {
             })
     }
 
-    //TODO: Possible additional functionality: Add a deny reason and notify user of post denial/deletion and reasoning 
-
-    const handleDeny = (post) => {
+    const handleDeny = (post, comments="") => {
         const postId = post.id
         setPosts(posts.filter(post => post.id !== postId))
-        deletePost(postId)
+        denyPost(postId, user, comments)
     }
 
     const approval = {
@@ -50,7 +49,7 @@ export const UnapprovedPosts = () => {
 
     return (
         <div className="columns is-centered">
-            <div className="column is-one-third">
+            <div className="column is-half">
                 <h1 className="title">Unapproved Posts</h1>
                 {/*Displays a skeleton while loading */}
                 {loading ? (

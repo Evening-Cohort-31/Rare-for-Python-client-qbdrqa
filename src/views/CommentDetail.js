@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { deleteComment, getCommentById } from "../managers/CommentManager"
+import { IsAdmin } from "../components/utils/IsAdmin.js"
 
 export const CommentDetail = () => {
   const { postId, commentId } = useParams()
   const navigate = useNavigate()
   const [comment, setComment] = useState(null)
+  const [currentUser, setCurrentUser] = useState(Number(localStorage.getItem("auth_token")))
+  const [admin, setAdmin] = useState(IsAdmin(currentUser))
 
   useEffect(() => {
     getCommentById(commentId).then(({ status, response }) => {
@@ -36,13 +39,13 @@ export const CommentDetail = () => {
   if (!comment) return <p>Loading...</p>
 
   return (
-    <>
+    <div className="columns is-centered">
+      <div className="column is-half">
       <h1>Comment Details</h1>
 
       <div style={{ marginBottom: "1rem" }}>
-        <Link to={`/post/${postId}/comments`}>Back to Comments</Link>
-        {"  |  "}
-        <Link to={`/post/${postId}/comments/${commentId}/edit`}>Edit</Link>
+        <button className="has-text-link" onClick={() => navigate(-1)}>Back</button>
+        {currentUser === comment.author_id && <> |  <Link to={`/post/${postId}/comments/${commentId}/edit`}>Edit</Link></>}
       </div>
 
       <section className="box">
@@ -52,15 +55,16 @@ export const CommentDetail = () => {
         <div style={{ fontSize: ".9rem", opacity: ".75" }}>
           {comment.created_on ? new Date(comment.created_on).toLocaleDateString("en-US") : ""}
         </div>
-
+        {(currentUser === comment.author_id || admin) && 
         <button
           className="button is-danger"
           style={{ marginTop: "1rem" }}
           onClick={handleDelete}
         >
           Delete
-        </button>
+        </button>}
       </section>
-    </>
+      </div>
+    </div>
   )
 }

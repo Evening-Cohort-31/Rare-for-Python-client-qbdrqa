@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { getApprovedPublishedPosts, getPostByTag, getPostsByCategory, searchPostsByTitle } from "../../managers/PostManager.js"
 import { Post } from "./Post.jsx"
 import { useLocation, useParams, useSearchParams } from "react-router-dom"
+import { IsAdmin } from "../utils/IsAdmin.js"
 
 export const PostsList = () => {
   const [posts, setPosts] = useState([])
@@ -9,6 +10,7 @@ export const PostsList = () => {
   const [loading, setLoading] = useState(true)
   const params = useParams()
   const location = useLocation()
+  const [admin, setAdmin] = useState(IsAdmin(Number(localStorage.getItem("auth_token"))))
 
   const isTagRoute = !!params.tagId
   const isCategoryRoute = !!params.category
@@ -57,12 +59,12 @@ export const PostsList = () => {
 
   return (
     <div className="columns is-centered">
-      <div className="column is-one-third">
+      <div className="column is-half">
       <h1 className="title">Posts</h1>
       {!loading ? 
         posts.length ? 
           posts.map(post => (
-            <Post post={post} key={post.id}/>
+            <Post post={post} key={post.id} admin={admin}/>
           )) :
           <p>No posts found</p> 
         :

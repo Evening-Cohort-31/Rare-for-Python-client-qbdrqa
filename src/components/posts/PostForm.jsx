@@ -65,7 +65,7 @@ export const PostForm = ({edit = false}) => {
         if (edit && postId) {
             setLoading(true);
             
-            getPostById(postId).then(async res => {
+            getPostById(postId, userId).then(async res => {
                 setLoading(false);
                 
                 if (res.status === 200) {
@@ -86,7 +86,8 @@ export const PostForm = ({edit = false}) => {
                         content: post.content,
                         category_id: post.category.id,
                         image: postHeaderImage,
-                        tags: post.tags?.map(tag => String(tag.id)) || []
+                        tags: post.tags?.map(tag => String(tag.id)) || [],
+                        status: post.status
                     });
                 } else {
                     setError({error: true, message: "Error retrieving post information"});
@@ -99,10 +100,19 @@ export const PostForm = ({edit = false}) => {
     }, [edit, postId, navigate, userId, postHeaderImage]);
 
     // Updates existing post or creates new one
-    const handleSubmitPost = async (e) => {
+    const handleSubmitPost = async (e, save=false) => {
         setError({error: false, message: ""})
         e.preventDefault()
         setLoading(true)
+
+        // Determine status based on save flag and user type
+        let status = edit ? formData.status : "draft";
+        if (!save) {
+            const isAdmin = await IsAdmin(userId);
+            status = isAdmin ? "approved" : "submitted";
+        } else {
+            status = "draft"
+        }
 
         const postDetails = {
             user_id: Number(localStorage.getItem("auth_token")),
@@ -111,15 +121,16 @@ export const PostForm = ({edit = false}) => {
             image: postHeaderImage,
             content: formData.content,
             tags: formData.tags,
-            approved: await IsAdmin(userId),
+            status: status,
             ...(edit && { id: postId })
         };
 
-        (edit && postDetails.user_id === userId ? editPost(postDetails) : createPost(postDetails)).then(async res => {
+        (edit && postDetails.user_id === userId ? editPost(postDetails, save) : createPost(postDetails)).then(async res => {
             setLoading(false)
             if (res.status >= 200 && res.status < 300) {
                 const response = await res.response
-                navigate(`/post/${response.id}`, {state: response})
+                !edit ? navigate(`/post/${response.id}`, {state: response})
+                : navigate(-1, {state: response})
             } else if (res.status >=400 && res.status < 500) {
                 setError({error: true, message: "Action not supported"})
             } else if (res.status >=500) {
@@ -231,7 +242,12 @@ export const PostForm = ({edit = false}) => {
                 <fieldset disabled={loading}>
                 <div className="field is-grouped">
                     <div className="control">
-                        <button className="button is-link" type="submit">Submit</button>
+                        <button className="button is-success" type="submit">Submit</button>
+                    </div>
+                    <div className="control">
+                        <button className="button is-link" onClick={(e) => {
+                            handleSubmitPost(e, true)
+                        }}>Save</button>
                     </div>
                     <div className="control">
                         <button type="button" className="button is-link is-light" onClick={() => navigate("/")}>Cancel</button>
@@ -240,6 +256,7 @@ export const PostForm = ({edit = false}) => {
                 </fieldset>
                 <div className="help">
                     <p>* Indicates a required field</p>
+                    <p>Saving will store current post in your drafts</p>
                 </div>
 
             </form>

@@ -50,8 +50,8 @@ export const MyPosts = () => {
                     Array.from({ length: 5 }).map((_, i) => (
                         <div className="card is-skeleton" key={i} style={{marginTop: "10px", minHeight: 150}}/>
                     ))
-                ) : posts.length > 0 ? posts.map((post) => (
-                    <Post post={post} edit={isAuthor} key={post.id} updatePost={setPosts}/>
+                ) : posts?.length > 0 ? posts.map((post) => (
+                    <Post post={post} edit={isAuthor} key={post.id} refresh={setPosts}/>
                 )) : (
                     <p>No posts found.</p>
                 )}

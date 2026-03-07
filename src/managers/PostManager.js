@@ -20,7 +20,7 @@ export const getApprovedPublishedPosts = () => {
 
 // Create New Entry in the posts database
 export const getUnapprovedPosts = () => {
-  return fetch(`${apiUrl}/posts?approved=false`, {
+  return fetch(`${apiUrl}/posts?status=submitted`, {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -51,7 +51,7 @@ export const createPost = (post) => {
   if (post.image) formData.append("image", post.image);
   formData.append("content", post.content);
   formData.append("tags", post.tags);
-  formData.append("approved", post.approved ? 1 : 0);
+  formData.append("status", post.status);
 
   return fetch(`${apiUrl}/post`, {
     method: "POST",
@@ -60,8 +60,8 @@ export const createPost = (post) => {
 };
 
 // Get All Specific User's posts
-export const getPostByUserId = (userId) => {
-  return fetch(`${apiUrl}/posts?user_id=${userId}`, {
+export const getPostByUserId = (userId, ownPosts = false) => {
+  return fetch(`${apiUrl}/posts?user_id=${userId}${ownPosts ? "&own_posts=true" : ""}`, {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -70,7 +70,7 @@ export const getPostByUserId = (userId) => {
 };
 
 // Edit Single Post
-export const editPost = (post) => {
+export const editPost = (post, draft=false) => {
   const formData = new FormData();
   formData.append("user_id", post.user_id || post.user?.id);
   formData.append("category_id", post.category_id || post.category?.id);
@@ -79,8 +79,14 @@ export const editPost = (post) => {
     formData.append("image", post.image);
   formData.append("content", post.content);
   formData.append("tags", JSON.stringify(post.tags));
-  formData.append("approved", post.approved);
   formData.append("id", post.id);
+  if (post.status)
+    formData.append("status", post.status);
+  if (draft) {
+    if (post.status) formData.set("status", "draft")
+    else formData.append("status", "draft")
+    formData.append("publication_date", "")
+  }
 
   return fetch(`${apiUrl}/posts/${post.id}`, {
     method: "PUT",
@@ -89,8 +95,8 @@ export const editPost = (post) => {
 };
 
 // Details Page
-export const getPostById = (id) => {
-  return fetch(`${apiUrl}/posts/${id}`, {
+export const getPostById = (id, userId) => {
+  return fetch(`${apiUrl}/posts/${id}?user_id=${userId}`, {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -98,26 +104,43 @@ export const getPostById = (id) => {
   }).then(normalize);
 };
 
-export const approvePost = (id) => {
+export const approvePost = (id, reviewerId) => {
   return fetch(`${apiUrl}/posts/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      approved: true,
+      action: "approve",
+      reviewer_id: reviewerId
     }),
   }).then(normalize);
 };
 
-export const unapprovePost = (id) => {
+export const denyPost = (id, reviewerId, adminComments) => {
+  return fetch(`${apiUrl}/posts/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      action: "reject",
+      reviewer_id: reviewerId,
+      admin_comments: adminComments || ""
+    })
+  }).then(normalize)
+}
+
+export const unapprovePost = (id, reviewerId, adminComments="") => {
   return fetch(`${apiUrl}/posts/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      approved: false,
+      action: "reject",
+      reviewer_id: reviewerId,
+      admin_comments: adminComments || ""
     })
   }).then(normalize)
 }
@@ -206,3 +229,40 @@ export const getPostsByCategory = async (category) => {
       })
     }
   }
+
+
+export const getUserDrafts = (userId) => {
+  return fetch(`${apiUrl}/posts/${userId}?status="draft"`, {
+    headers: {
+      "Content-Type" : "application/json"
+    }
+  }).then(normalize)
+}
+
+export const getUserSubmittedPosts = (userId) => {
+  return fetch(`${apiUrl}/posts/${userId}?status="submitted`, {
+    headers: {
+      "Content-Type" : "application/json"
+    }
+  }).then(normalize)
+}
+
+export const getUserDeniedPosts = (userId) => {
+  return fetch(`${apiUrl}/posts/${userId}?status=rejected`, {
+    headers: {
+      "Content-Type" : "application/json"
+    }
+  }).then(normalize)
+}
+
+export const submitPost = (postId) => {
+  return fetch(`${apiUrl}/posts/${postId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      action: "submit"
+    })
+  }).then(normalize)
+}

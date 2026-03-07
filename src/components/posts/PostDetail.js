@@ -1,50 +1,67 @@
-import { useEffect, useMemo, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { getPostById, getReactionOptions } from "../../managers/PostManager.js"
-import { Post } from "./Post.jsx"
-import { IsAdmin } from "../utils/IsAdmin.js"
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getPostById } from "../../managers/PostManager.js";
+import { Post } from "./Post.jsx";
+import { IsAdmin } from "../utils/IsAdmin.js";
 
 export const PostDetail = () => {
-  const { postId } = useParams()
-  const [post, setPost] = useState(null)
-  const [isOwner, setIsOwner] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const { postId } = useParams();
+  const [post, setPost] = useState(null);
+  const [isOwner, setIsOwner] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    setLoading(true)
-    getPostById(postId).then(({ status, response }) => {
-      setLoading(false)
-      if (status >= 200 && status < 300) {
-        response.then(setPost)
-      } else {
-        response.then(console.log)
-      }
-    })
-  }, [postId])
-
-  const isAdmin = useMemo(() => {
-      return IsAdmin(localStorage.getItem("auth_token"))
-  }, [])
+  const navigate = useNavigate();
 
   useEffect(() => {
-    post && setIsOwner(Number(localStorage.getItem("auth_token")) === post.user.id)
-  }, [post])
+    setLoading(true);
+    getPostById(postId, Number(localStorage.getItem("auth_token"))).then(
+      ({ status, response }) => {
+        setLoading(false);
+        if (status >= 200 && status < 300) {
+          response.then(setPost);
+        } else {
+          if (status === 404) {
+            navigate("/");
+          }
+        }
+      },
+    );
+  }, [postId, navigate]);
 
   useEffect(() => {
-    isOwner === false && post && post.approved === 0 && navigate("/")
-  },[isOwner, post, navigate])
+    IsAdmin(localStorage.getItem("auth_token")).then(setIsAdmin);
+  }, []);
+
+  useEffect(() => {
+    post &&
+      setIsOwner(Number(localStorage.getItem("auth_token")) === post.user.id);
+  }, [post]);
+
+  useEffect(() => {
+    isOwner === false && post && post.status !== "approved" && navigate("/");
+  }, [isOwner, post, navigate]);
 
   return (
     <div className="columns is-centered">
       <div className="column is-half is-centered">
-        {
-          loading 
-            ? <div className="card is-skeleton" style={{marginTop: "10px", minHeight: 750, borderRadius: "10px"}}/>
-            : post && <Post post={post} detail edit={isOwner} admin={isAdmin} updatePost={setPost}/>
-        }
+        {loading ? (
+          <div
+            className="card is-skeleton"
+            style={{ marginTop: "10px", minHeight: 750, borderRadius: "10px" }}
+          />
+        ) : (
+          post && (
+            <Post
+              post={post}
+              detail
+              edit={isOwner}
+              admin={isAdmin}
+              updatePost={setPost}
+            />
+          )
+        )}
       </div>
     </div>
-  )
-}
+  );
+};

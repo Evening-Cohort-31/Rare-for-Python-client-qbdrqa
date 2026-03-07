@@ -1,14 +1,15 @@
-import { MdEdit } from "react-icons/md"
+import { MdDelete, MdEdit } from "react-icons/md"
 import { Link, useNavigate } from "react-router-dom"
 import { HumanDate } from "../utils/HumanDate.js"
 import { useEffect, useMemo, useState } from "react"
 import { getAllTags } from "../../managers/TagManager.js"
-import { editPost, deletePost, unapprovePost,addReaction, getPostById, removeReaction  } from "../../managers/PostManager.js"
+import { editPost, deletePost, unapprovePost,addReaction, getPostById, removeReaction, submitPost  } from "../../managers/PostManager.js"
 import { CommentForm } from "../../views/CommentForm.js"
 import { BiUpArrow } from "react-icons/bi"
 import { PostHeaderImage } from "../utils/PostHeaderImage.jsx"
+import { deleteComment } from "../../managers/CommentManager.js"
 
-export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false}) => {
+export const Post = ({ post, edit = false, detail = false, approval=null, updatePost=null, admin=false, refresh=null, comment=false}) => {
   
   const [showTagManager, setShowTagManager] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -19,10 +20,13 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
   const [loadingTags, setLoadingTags] = useState(false)
   const currentUserId = Number(localStorage.getItem("auth_token"))
   const [userReactions, setUserReactions] = useState([])
+  const [viewModal, setViewModal] = useState(false)
+  const [adminComments, setAdminComments] = useState("")
+  const [viewCommentModal, setViewCommentModal] = useState(false)
 
   const handleReaction = (reactionId) => {
     addReaction(post.id, currentUserId, reactionId).then(() => {
-      getPostById(post.id).then(({ status, response }) => {
+      getPostById(post.id, currentUserId).then(({ status, response }) => {
         if (status >= 200 && status < 300) {
           response.then((updatedPost) => {
             updatePost(updatedPost)
@@ -103,25 +107,25 @@ export const Post = ({ post, edit = false, detail = false, approval=null, update
     setViewingComments(true)
   }
 
-  const handleUnapprove = (postId) => {
-    unapprovePost(postId).then(({status, response}) => {
+  const handleUnapprove = (postId, comments) => {
+    unapprovePost(postId, currentUserId, comments).then(({status, response}) => {
       if (status === 200) {
         response.then(post => updatePost(post))
       }
     })
   }
 
-useEffect(() => {
-        if (showTagManager) {
-            getAllTags().then(res => res.response.then((res) => {
-                const filterCurrentTags = res.filter(tag => 
-                    !postTags.map(ptag => ptag.id).includes(tag.id)
-                )
-                setLoadingTags(false)
-                setAllTags(filterCurrentTags)
-            }))
-        }
-    }, [showTagManager, postTags])
+  useEffect(() => {
+          if (showTagManager) {
+              getAllTags().then(res => res.response.then((res) => {
+                  const filterCurrentTags = res.filter(tag => 
+                      !postTags.map(ptag => ptag.id).includes(tag.id)
+                  )
+                  setLoadingTags(false)
+                  setAllTags(filterCurrentTags)
+              }))
+          }
+      }, [showTagManager, postTags])
 
   const tagManager = (
     <div className="message is-info">
@@ -179,59 +183,113 @@ useEffect(() => {
 
   return (
     <div className="card" style={{ marginTop: "10px" }}>
-      {detail && (
-        <div className="card-image">
-          <figure className="image is-16by9">
-            <PostHeaderImage src={`http://localhost:8000/posts?image=${post.id}&v=${post.updated_at}`}/>
-          </figure>
+      <div className={`modal ${viewModal ? "is-active" : ""}`}>
+        <div 
+          className="modal-background"
+          onClick={() => setViewModal(false)}
+        />
+        <div className="modal-content">
+          <div className="box">
+            <div className="field">
+              <label className="label">Reason for unapproving/denying post:</label>
+              <div className="control">
+                <textarea 
+                  className="textarea" 
+                  placeholder="Rejection reasons" 
+                  required 
+                  value={adminComments}
+                  onChange={(e) => setAdminComments(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="field is-grouped">
+              <div className="control">
+                <button 
+                  className="button is-danger"
+                  onClick={() => {
+                    approval ? approval.handleDeny(post) : handleUnapprove(post.id, adminComments)
+                    setViewModal(false)
+                    setAdminComments("")
+                  }}
+                >Confirm</button>
+              </div>
+              <div className="control">
+                <button 
+                  className="button is-warning"
+                  onClick={() => {
+                    setViewModal(false)
+                    setAdminComments("")
+                  }}
+                >Cancel</button>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
+      {detail && (
+            <PostHeaderImage src={`http://localhost:8000/posts?image=${post.id}&v=${post.updated_at}`}/>
 
+      )}
+      {post.status === "rejected" && post.admin_comments &&
+        <article className="message is-warning">
+          <div className="message-header">
+            <p>Notice: Post Rejected</p>
+          </div>
+          <div className="message-body">
+            {post.admin_comments}
+          </div>
+        </article>
+      
+      }
       <header className="card-header">
-        <Link className="card-header-title mb-0 is-size-4" to={`/post/${post.id}`}>
+        <Link 
+          style={{width: "50%"}}
+          className="card-header-title mb-0 is-size-4" 
+          to={`/post/${post.id}`}>
           {post.title}
         </Link>
 
-        {admin && post.approved ?
-          <span className="button is-text" onClick={() => {
-            handleUnapprove(post.id)
-          }}>Unapprove</span> : <></>
-        }
+        <div className="buttons has-addons">
+          {detail && admin && post.status === "approved" ?
+            <button 
+              className="button card-header-icon is-text" 
+              onClick={() => {
+              setViewModal(true)
+            }}>Unapprove</button> : <></>
+          }
 
-        {edit && (
-          <button className="card-header-icon" aria-label="edit post">
-            <span className="icon">
-              <MdEdit
-                onClick={() => {
-                  navigate(`/post/${post.id}?edit=true`)
-                }}
-              />
-            </span>
-          </button>
-        )}
+          {edit && (
+            <button className="button card-header-icon is-text" aria-label="edit post">
+              <span className="icon">
+                <MdEdit
+                  onClick={() => {
+                    navigate(`/post/${post.id}?edit=true`)
+                  }}
+                />
+              </span>
+            </button>
+          )}
 
-        {edit && (
-          <button
-            className="card-header-icon has-text-danger"
-            aria-label="delete post"
-            onClick={() => {
-              const confirmed = window.confirm("Are you sure you want to delete this post?")
-              if (confirmed) {
-                deletePost(post.id).then(() => {
-                  navigate("/")
-                })
-              }
-            }}
-          >
-            🗑️ Delete
-          </button>
-        )}
-
-
+          {(edit || admin) && (
+            <button
+              className="button card-header-icon is-text"
+              aria-label="delete post"
+              onClick={() => {
+                const confirmed = window.confirm("Are you sure you want to delete this post?")
+                if (confirmed) {
+                  deletePost(post.id).then(() => {
+                    navigate("/")
+                  })
+                }
+              }}
+            >
+              <MdDelete/>
+            </button>
+          )}
+        </div>
       </header>
-
-      <div className="card-content pt-2">
-        <div className="content">
+      <div className="card-content py-3">
+        <div className="content mb-0">
           {detail && <div style={{ marginBlock: 10 }}>{post?.content}</div>}
 
           <div>
@@ -276,7 +334,7 @@ useEffect(() => {
 
           {showTagManager && !loadingTags && tagManager}
 
-          {detail && (
+          {post.status === "approved" && detail && (
             <div className="buttons" style={{ marginBlock: 10, display: "flex", gap: "10px" }}>
               {post.reaction_counts.map(r => (
                 <button 
@@ -298,9 +356,10 @@ useEffect(() => {
             </div>
           )}
 
-          <strong>Published: </strong>
-          <HumanDate date={post?.publication_date} />
-          <div hidden={!viewingComments} className="pt-5">
+          {post.status === "approved" && 
+          <><strong>Published: </strong>
+          <HumanDate date={post?.publication_date} /></>}
+          <div hidden={!viewingComments || comments.length === 0} className="pt-5">
             <div className="is-flex is-align-items-center pb-5">
               <h3 className="" style={{margin: 0}}>Comments</h3>
               <BiUpArrow className="button" style={{marginLeft: "auto"}} onClick={() => setViewingComments(false)}/>
@@ -308,20 +367,83 @@ useEffect(() => {
             <div style={{overflowY: "scroll", maxHeight: "300px"}} className="box comments-scroll">
               {comments.length > 0 && comments.slice(0,3).map(comment => (
                 <article className="message is-small" key={comment.id}>
+                  <div className={`modal ${viewCommentModal ? "is-active" : ""}`}>
+                      <div 
+                      className="modal-background"
+                      onClick={() => setViewCommentModal(false)}
+                    />
+                      <div className="modal-content">
+                        <p>Are you sure you want to delete this comment?</p>
+                        <div className="buttons">
+                              <button 
+                                className="button is-danger"
+                                onClick={() => {
+                                  deleteComment(comment.id).then(({status, response}) => {
+                                    if (status === 200) {
+                                      setComments(prev => prev.filter(c => c.id !== comment.id))
+                                    }
+                                  })
+                                  setViewCommentModal(false)
+                                }}
+                              >Confirm</button>
+                              <button 
+                                className="button is-warning"
+                                onClick={() => {
+                                  setViewCommentModal(false)
+                                }}
+                              >Cancel</button>
+                        </div>
+                      </div>
+                  </div>
                   <div className="message-header">
-                    <div className="column is-two-thirds">
-                      <h3 className="has-text-white hide-overflow">{comment.subject}</h3>
-                      <button className="ml-3 has-text-link" onClick={() => {
-                        navigate(`/users/${comment.author.id}`)
-                      }}>{comment.author.username || comment.username}</button>
-                    </div>
-                    <div className="column is-one-third">                  
-                      <HumanDate date={comment.created_on}/>
-                    </div>
+                      <a 
+                        href={`/post/${post.id}/comments/${comment.id}`} 
+                        className="has-text-white hide-overflow is-size-6"
+                        style={{textDecorationLine: "none"}}
+                      >
+                        {comment.subject}
+                      </a>
+                      <div className="buttons ml-auto">
+                        {(currentUserId === comment.author?.id || currentUserId === comment?.author_id) && 
+                        <button 
+                          className="button"
+                          onClick={() => {
+                            navigate(`/post/${post.id}/comments/${comment.id}/edit`)
+                          }}
+                          >
+                          <span className="icon is-small">
+                            <MdEdit/>
+                          </span>
+                        </button>}
+                        {(currentUserId === comment.author?.id || currentUserId === comment?.author_id || admin) && 
+                        <button 
+                          className="button"
+                          onClick={() => {
+                            setViewCommentModal(true)
+                          }}
+                          >
+                          <span className="icon is-small">
+                            <MdDelete/>
+                          </span>
+                        </button>}
+                      </div>
                   </div>
                   <div className="message-body">
-                    {comment.content}
-                    
+                    <div className="is-flex is-flex-direction-column">
+                      <span>{comment.content}</span>
+                      <div className="is-size-7 has-text-grey mt-3">
+                        <span>Posted on </span>
+                        <HumanDate date={comment.created_on}/>
+                        <span> by </span>
+                        <button 
+                          className="button is-ghost is-small p-0 has-text-link" 
+                          onClick={() => navigate(`/users/${comment.author.id}`)}
+                        >
+                          {comment.author?.username || comment?.username}
+                        </button>
+                      </div>
+                    </div>
+
                   </div>
                 </article>
               ))}
@@ -337,23 +459,73 @@ useEffect(() => {
             <CommentForm onCommentAdded={handleComments} postId={post.id} />
         </div>
       </div>
-      {approval 
+      {approval
       ?
       <footer className="card-footer">
-          <button className="card-footer-item button is-success" onClick={() => approval.handleApprove(post)}>Approve</button>
-          <button className="card-footer-item button is-danger" onClick={() => approval.handleDeny(post)}>Deny</button>
+          <button 
+            style={{borderRadius: 0, borderBottomLeftRadius: "6px"}}
+            className="card-footer-item button is-success" 
+            onClick={() => approval.handleApprove(post)}
+          >Approve
+          </button>
+          <button 
+            style={{borderRadius: 0, borderBottomRightRadius: "6px"}}
+            className="card-footer-item button is-danger" 
+            onClick={() => setViewModal(true)}
+          >Deny
+          </button>
       </footer> 
       :
+      post.status === "approved" && !comment 
+      ?
       <div className="card-footer">
-        <button className="card-footer-item button has-text-success" onClick={() => setAddingComment(true)} disabled={post.approved === 0}>Add Comment</button>
         <button 
+          style={{borderRadius: 0, borderBottomLeftRadius: "6px"}}
+          className="card-footer-item button has-text-success" 
+          onClick={() => setAddingComment(true)} disabled={post.status !== "approved"}
+        >
+          Add Comment
+        </button>
+        <button 
+          style={{borderRadius: 0, borderBottomRightRadius: "6px"}}
           className={`card-footer-item button ${comments.length > 0 ? 'has-text-info' : 'has-text-gray'}`} 
           onClick={() => comments.length > 0 && setViewingComments(!viewingComments)} 
           disabled={comments.length === 0}
         >
           {!viewingComments ? "View Comments" : "Hide Comments"}
         </button>
-      </div>}
+      </div>
+      :
+      post.status === "draft" || post.status === "rejected"
+      ?
+      <div className="card-footer">
+        <button 
+          style={{borderRadius: 0, borderBottomLeftRadius: "6px"}}
+          className="card-footer-item button is-success" 
+          onClick={() => {
+          submitPost(post.id).then(({status, response}) => {
+            if (status === 200) {
+              refresh && refresh()
+              updatePost && response.then(updatePost)
+              }
+            })
+          }}
+        >
+          Submit
+        </button>
+        <button 
+        style={{borderRadius: 0, borderBottomRightRadius: "6px"}}
+        className="card-footer-item button is-link" 
+        onClick={() => {
+          navigate(`/post/${post.id}?edit=true`)
+        }}
+        >
+          Edit
+      </button>
+      </div>   
+      :
+        <></>
+    }
     </div>
   )
 }
