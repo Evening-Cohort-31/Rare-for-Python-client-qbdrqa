@@ -9,7 +9,7 @@ const createTestUser = async () => {
         password: "password",
         bio: "Auto-generated test user",
         profile_image_url: "",
-        type: "author"
+        type: "admin"
     };
 
     try {

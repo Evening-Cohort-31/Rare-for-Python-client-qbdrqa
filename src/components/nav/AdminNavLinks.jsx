@@ -22,6 +22,7 @@ export const AdminNavLinks = ({token}) => {
                     <Link to="/admin/users" className="navbar-item" onClick={closeDropdown}>User Profiles</Link>
                     <Link to="/admin/categories" className="navbar-item" onClick={closeDropdown}>Category Management</Link>
                     <Link to="/admin/unapproved_posts" className="navbar-item" onClick={closeDropdown}>Post Approval</Link>
+                    <Link to="/admin/tags" className="navbar-item" onClick={closeDropdown}>Tag Management</Link>
                     <Link to="/admin/reactions" className="navbar-item" onClick={closeDropdown}>Reaction Management</Link>
                 </div>
             </div>
