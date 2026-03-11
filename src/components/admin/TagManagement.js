@@ -36,9 +36,13 @@ export const TagManagement = () => {
 
     const handleCreateTag = () => {
         if (newTag) {
-            createTag({ label: newTag }).then(() => {
+            createTag({ label: newTag }).then((status, response) => {
+              if (status >= 200 && status < 300) {
                 setNewTag("");
                 loadTags();
+              } else {
+                response.then(console.log)
+              }
             });
         }
     };
