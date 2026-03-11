@@ -19,6 +19,8 @@ import { CommentEditForm } from "./CommentEditForm"
 import { CommentDetail } from "./CommentDetail"
 import { CategoryEditForm } from "../components/admin/CategoryEditForm.js"
 import { ReactionManger } from "../components/admin/ReactionManager.jsx"
+import { TagManagement } from "../components/admin/TagManagement.js"
+import { TagEditForm } from "../components/admin/TagEditForm.js"
 
 export const ApplicationViews = ({ token, setToken }) => {
   return (
@@ -64,6 +66,8 @@ export const ApplicationViews = ({ token, setToken }) => {
           <Route path="unapproved_posts" element={<UnapprovedPosts />} />
           <Route path="users" element={<UserList />} />
           <Route path="reactions" element={<ReactionManger/>}/>
+          <Route path="tags" element={<TagManagement />} />
+          <Route path="tags/:tagId/edit" element={<TagEditForm />} />
         </Route>
       </Route>
     </Routes>

@@ -33,3 +33,23 @@ export const createTag = (tag) => {
         return {status: res.status, response: res.json()}
     })
 }
+
+export const updateTag = (tagId, tag) => {
+  return fetch(`${apiUrl}/tags/${tagId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify(tag),
+  }).then(normalize)
+}
+
+export const deleteTag = (tagId) => {
+  return fetch(`${apiUrl}/tags/${tagId}`, {
+    method: "DELETE",
+    headers: {
+      "Accept": "application/json",
+    },
+  }).then(normalize)
+}
