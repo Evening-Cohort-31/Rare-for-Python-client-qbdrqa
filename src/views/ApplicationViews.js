@@ -18,9 +18,8 @@ import { HomePage } from "../components/profile/HomePage.jsx"
 import { CommentEditForm } from "./CommentEditForm"
 import { CommentDetail } from "./CommentDetail"
 import { CategoryEditForm } from "../components/admin/CategoryEditForm.js"
-import { TagManagement } from "../components/tags/TagManagement"
-import { ReactionManger } from "../components/admin/ReactionManager.jsx"
 import { TagManagement } from "../components/admin/TagManagement.js"
+import { ReactionManger } from "../components/admin/ReactionManager.jsx"
 import { TagEditForm } from "../components/admin/TagEditForm.js"
 
 export const ApplicationViews = ({ token, setToken }) => {

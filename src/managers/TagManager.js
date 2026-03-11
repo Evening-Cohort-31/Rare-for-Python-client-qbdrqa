@@ -1,5 +1,11 @@
 const apiUrl = "http://localhost:8000"
 
+const normalize = (res) => {
+  const status = res.status
+  const response = res.json()
+  return { status, response }
+}
+
 export const getAllTags = () => {
     return fetch(`${apiUrl}/tags`, {
         headers: {

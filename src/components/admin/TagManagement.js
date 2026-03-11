@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { getTags, deleteTag } from "../../managers/TagManager.js"
+import { getAllTags, deleteTag, createTag } from "../../managers/TagManager.js"
 
 export const TagManagement = () => {
   const [tags, setTags] = useState([])
+  const [newTag, setNewTag] = useState("");
 
   const loadTags = () => {
-    getTags().then(({ status, response }) => {
+    getAllTags().then(({ status, response }) => {
       if (status >= 200 && status < 300) {
         response.then(setTags)
       } else {
@@ -33,7 +34,44 @@ export const TagManagement = () => {
     })
   }
 
+    const handleCreateTag = () => {
+        if (newTag) {
+            createTag({ label: newTag }).then(() => {
+                setNewTag("");
+                loadTags();
+            });
+        }
+    };
+
   return (
+    <>
+      <div className="column is-one-third">
+          <h2 className="title is-2">Create a Tag</h2>
+          <div className="box">
+              <div className="field">
+                  <label className="label" htmlFor="newTag">Tag Label</label>
+                  <div className="control">
+                      <input
+                          type="text"
+                          className="input"
+                          id="newTag"
+                          value={newTag}
+                          onChange={(e) => setNewTag(e.target.value)}
+                          placeholder="Enter new tag label"
+                      />
+                  </div>
+              </div>
+              <div className="control">
+                  <button
+                      className="button is-primary"
+                      onClick={handleCreateTag}
+                  >
+                      Create Tag
+                  </button>
+              </div>
+          </div>
+      </div>
+    {
     tags.length > 0 && (
       <div className="container">
         <h1 className="title is-3 my-4">All Tags</h1>
@@ -68,5 +106,6 @@ export const TagManagement = () => {
         </div>
       </div>
     )
+  }</>
   )
 }
