@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { getTagById, updateTag } from "../../managers/TagManager.js"
 
 export const TagEditForm = () => {
   const { tagId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const tags = location.state
 
   const [label, setLabel] = useState("")
   const [loading, setLoading] = useState(true)
@@ -55,7 +58,12 @@ export const TagEditForm = () => {
       </fieldset>
 
       <fieldset className="field is-grouped">
-        <button className="button is-success" type="submit">
+        <button 
+          className="button is-success" 
+          type="submit"
+          title={tags.find(t => t.label.toLowerCase() === label.toLowerCase()) ? "This tag already exists, please make a change" : ""}
+          disabled={tags.find(t => t.label.toLowerCase() === label.toLowerCase())}
+          >
           Save
         </button>
 

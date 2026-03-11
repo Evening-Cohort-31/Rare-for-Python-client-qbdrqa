@@ -89,6 +89,7 @@ export const TagManagement = () => {
                     <Link
                       className="button is-link is-light"
                       to={`/admin/tags/${tag.id}/edit`}
+                      state={tags}
                     >
                       Edit
                     </Link>
