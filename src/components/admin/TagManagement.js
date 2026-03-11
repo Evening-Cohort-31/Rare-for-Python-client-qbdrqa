@@ -65,6 +65,8 @@ export const TagManagement = () => {
                   <button
                       className="button is-primary"
                       onClick={handleCreateTag}
+                      title={tags.find(t => t.label.toLowerCase() === newTag.toLowerCase()) ? "This tag already exists" : ""}
+                      disabled={tags.find(t => t.label.toLowerCase() === newTag.toLowerCase())}
                   >
                       Create Tag
                   </button>
