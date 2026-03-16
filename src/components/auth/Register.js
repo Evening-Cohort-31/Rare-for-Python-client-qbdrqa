@@ -104,7 +104,7 @@ export const Register = ({setToken}) => {
 
         <div className="field">
           <label className="label">Profile Picture</label>
-          <DragDrop setProfileImage={setProfileImage}/>
+          <DragDrop setImage={setProfileImage}/>
         </div>
 
         <div className="field is-grouped">
