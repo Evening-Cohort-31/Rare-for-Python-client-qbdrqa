@@ -39,8 +39,8 @@ export const PostDetail = () => {
   }, [post]);
 
   useEffect(() => {
-    isOwner === false && post && post.status !== "approved" && navigate("/");
-  }, [isOwner, post, navigate]);
+    isOwner === false && isAdmin === false && post && post.status !== "approved" && navigate("/");
+  }, [isOwner, isAdmin, post, navigate]);
 
   return (
     <div className="columns is-centered">
