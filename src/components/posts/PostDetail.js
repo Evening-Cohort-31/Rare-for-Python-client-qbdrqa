@@ -9,7 +9,7 @@ export const PostDetail = () => {
   const [post, setPost] = useState(null);
   const [isOwner, setIsOwner] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(null);
 
   const navigate = useNavigate();
 
@@ -39,7 +39,11 @@ export const PostDetail = () => {
   }, [post]);
 
   useEffect(() => {
-    isOwner === false && isAdmin === false && post && post.status !== "approved" && navigate("/");
+    isOwner === false &&
+      isAdmin === false &&
+      post &&
+      post.status !== "approved" &&
+      navigate("/");
   }, [isOwner, isAdmin, post, navigate]);
 
   return (
@@ -65,3 +69,4 @@ export const PostDetail = () => {
     </div>
   );
 };
+
