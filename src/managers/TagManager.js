@@ -12,8 +12,7 @@ export const getAllTags = () => {
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
-    }).then(res => {
-        return {status: res.status, response: res.json()}})
+    }).then(normalize)
 }
 
 export const getTagById = (id) => {
@@ -22,9 +21,7 @@ export const getTagById = (id) => {
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
-    }).then(res => {
-        return {status: res.status, response: res.json()}
-    })
+    }).then(normalize)
 }
 
 export const createTag = (tag) => {
@@ -35,9 +32,7 @@ export const createTag = (tag) => {
             "Accept": "application/json"
         },
         body: JSON.stringify(tag)
-    }).then(res => {
-        return {status: res.status, response: res.json()}
-    })
+    }).then(normalize)
 }
 
 export const updateTag = (tagId, tag) => {
@@ -57,5 +52,5 @@ export const deleteTag = (tagId) => {
     headers: {
       "Accept": "application/json",
     },
-  }).then(normalize)
+  })
 }
